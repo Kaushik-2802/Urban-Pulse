@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import AuthModal from "../components/AuthModal";
 
 const Home = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -8,6 +9,7 @@ const Home = () => {
     phone: '',
     message: ''
   });
+  const [showAuthModal,setShowAuthModal]=useState(false);
 
   const styles = {
     container: {
@@ -426,6 +428,10 @@ const Home = () => {
                 <a 
                   href="#" 
                   style={styles.loginBtn}
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    setShowAuthModal(true);
+                  }}
                   onMouseEnter={(e) => handleLoginHover(e, true)}
                   onMouseLeave={(e) => handleLoginHover(e, false)}
                 >
@@ -617,6 +623,46 @@ const Home = () => {
       <footer style={styles.footer}>
         <p>&copy; 2025 UrbanPulse. All rights reserved.</p>
       </footer>
+      {showAuthModal && (
+  <div
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 2000
+    }}
+  >
+    <div style={{ position: 'relative' }}>
+      <AuthModal />
+      <button
+        onClick={() => setShowAuthModal(false)}
+        style={{
+          position: 'absolute',
+          top: '-10px',
+          right: '-10px',
+          background: '#ef4444',
+          color: 'white',
+          border: 'none',
+          borderRadius: '50%',
+          width: '30px',
+          height: '30px',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+        }}
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
