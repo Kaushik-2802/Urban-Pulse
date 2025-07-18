@@ -2,6 +2,7 @@ import ServiceCard from './ServiceCard';
 import Payments from './Payments';
 import ComplaintBox from './ComplaintBox';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const services = [
@@ -10,6 +11,7 @@ export default function Dashboard() {
     { name: 'Carpenter', cost: 300 }
   ];
   const [userProfile, setUserProfile] = useState(null);
+  const navigate = useNavigate();
 
   const payments = [
     { service: 'Plumber', amount: 200, dueDate: '2025-07-15' },
@@ -22,12 +24,11 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('userId');  // Clear session if needed
+      localStorage.removeItem('userId');
       window.location.href = '/';
     }
   };
 
-  // ✅ Fetch Profile on Load
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -56,20 +57,21 @@ export default function Dashboard() {
     container: {
       minHeight: '100vh',
       backgroundColor: '#f9fafb',
-      padding: '24px'
+      padding: '0'
     },
     wrapper: {
       maxWidth: '1280px',
-      margin: '0 auto'
+      margin: '0 auto',
+      padding: '0 24px'
     },
     header: {
-      marginBottom: '40px',
+      width: '100%',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      borderRadius: '16px',
-      padding: '32px',
+      padding: '32px 0',
       color: 'white',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      marginBottom: '40px'
     },
     headerOverlay: {
       position: 'absolute',
@@ -83,6 +85,9 @@ export default function Dashboard() {
     headerContent: {
       position: 'relative',
       zIndex: 2,
+      maxWidth: '1280px',
+      margin: '0 auto',
+      padding: '0 24px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'flex-start'
@@ -94,6 +99,22 @@ export default function Dashboard() {
       display: 'flex',
       alignItems: 'center',
       gap: '12px'
+    },
+    profileButton: {
+      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      border: '1px solid rgba(255, 255, 255, 0.3)',
+      borderRadius: '8px',
+      padding: '8px 16px',
+      color: 'white',
+      fontSize: '14px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      transition: 'all 0.2s ease',
+      backdropFilter: 'blur(10px)',
+      textDecoration: 'none'
     },
     logoutButton: {
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -316,59 +337,69 @@ export default function Dashboard() {
     }
   };
 
+  const handleButtonHover = (e, isHover) => {
+    if (isHover) {
+      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+      e.target.style.transform = 'translateY(-1px)';
+    } else {
+      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+      e.target.style.transform = 'translateY(0)';
+    }
+  };
+
   return (
     <div style={styles.container}>
-      <div style={styles.wrapper}>
-        {/* Header */}
-        <div style={styles.header}>
-          <div style={styles.headerOverlay}></div>
-          <div style={styles.decorativeElement}></div>
-          <div style={styles.headerContent}>
-            <div style={styles.headerLeft}>
-              <div style={styles.titleContainer}>
-                <div style={styles.titleIcon}>
-                  <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
-                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                  </svg>
-                </div>
-                <h1 style={styles.title}>
-                  Dashboard
-                </h1>
-              </div>
-              <p style={styles.subtitle}>
-                Welcome back! Manage your services, payments, and support requests all in one place
-              </p>
-            </div>
-            
-            <div style={styles.headerRight}>
-              <div style={styles.userInfo}>
-                <div style={styles.userAvatar}>
-                  U
-                </div>
-                <span style={styles.userName}>{userProfile?.name ||'User'}</span>
-              </div>
-              
-              <button 
-                style={styles.logoutButton}
-                onClick={handleLogout}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-                  e.target.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.transform = 'translateY(0)';
-                }}
-              >
-                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+      {/* Full-width Header */}
+      <div style={styles.header}>
+        <div style={styles.headerOverlay}></div>
+        <div style={styles.decorativeElement}></div>
+        <div style={styles.headerContent}>
+          <div style={styles.headerLeft}>
+            <div style={styles.titleContainer}>
+              <div style={styles.titleIcon}>
+                <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                  <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                 </svg>
-                Logout
-              </button>
+              </div>
+              <h1 style={styles.title}>
+                Dashboard
+              </h1>
             </div>
+            <p style={styles.subtitle}>
+              Welcome back! Manage your services, payments, and support requests all in one place
+            </p>
+          </div>
+          
+          <div style={styles.headerRight}>
+            <button 
+              onClick={() => navigate('/profile')} 
+              style={styles.profileButton}
+              onMouseEnter={(e) => handleButtonHover(e, true)}
+              onMouseLeave={(e) => handleButtonHover(e, false)}
+            >
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+              Profile
+            </button>
+            
+            <button 
+              style={styles.logoutButton}
+              onClick={handleLogout}
+              onMouseEnter={(e) => handleButtonHover(e, true)}
+              onMouseLeave={(e) => handleButtonHover(e, false)}
+            >
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div style={styles.wrapper}>
         {/* Main Content Grid */}
         <div style={{
           ...styles.mainGrid,

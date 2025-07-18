@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthModal from "../components/AuthModal";
 
 const Home = () => {
@@ -10,6 +11,9 @@ const Home = () => {
     message: ''
   });
   const [showAuthModal,setShowAuthModal]=useState(false);
+  const navigate=useNavigate();
+
+  
 
   const styles = {
     container: {
@@ -450,13 +454,6 @@ const Home = () => {
         <div style={styles.heroContent}>
           <h2 style={styles.heroTitle}>Welcome to UrbanPulse</h2>
           <p style={styles.heroSubtitle}>Smart Living for Modern Communities</p>
-          <button 
-            style={styles.ctaButton}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            Get Started
-          </button>
         </div>
       </section>
 

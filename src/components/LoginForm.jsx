@@ -24,8 +24,9 @@ export default function LoginForm({ userType }) {
         ...formData,
         userType
       };
+      const endpoint= userType==='worker'?'http://localhost:5000/api/worker/login':'http://localhost:5000/api/auth/login'
 
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -37,7 +38,12 @@ export default function LoginForm({ userType }) {
         alert(data.message || 'Login successful');
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('userType', data.userType);
-            navigate("/dashboard")
+        const type = data.user?.userType || userType;
+        if (type === 'worker') {
+          navigate('/worker/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
      } catch (error) {
       console.error(error);

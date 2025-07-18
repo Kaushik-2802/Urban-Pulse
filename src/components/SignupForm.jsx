@@ -27,8 +27,9 @@ export default function SignupForm({ userType }) {
         userType,
         profession: userType === 'worker' ? formData.profession : undefined
       };
+      const endpoint=userType==='worker'?'http://localhost:5000/api/worker/register':'http://localhost:5000/api/auth/register'
 
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

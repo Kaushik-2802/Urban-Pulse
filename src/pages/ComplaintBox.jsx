@@ -10,8 +10,6 @@ export default function ComplaintBox() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
     setTimeout(() => {
       alert(`Complaint Submitted Successfully!\n\nCategory: ${category}\nPriority: ${priority}\nComplaint: ${complaint}\nLocation: ${area}`);
       setComplaint('');
