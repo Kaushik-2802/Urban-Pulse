@@ -35,8 +35,9 @@ export default function LoginForm({ userType }) {
       const data = await res.json();
       console.log(data);
       if (res.ok) {
+        const userId = data.user?._id || data.userId;
         alert(data.message || 'Login successful');
-        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('userId',userId);
         localStorage.setItem('userType', data.userType);
         const type = data.user?.userType || userType;
         if (type === 'worker') {

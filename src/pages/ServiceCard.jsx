@@ -1,5 +1,5 @@
 export default function ServiceCard({ service, onBook }) {
-  const styles = {
+const styles = {
     card: {
       backgroundColor: '#ffffff',
       border: '1px solid #e2e8f0',
@@ -118,51 +118,51 @@ export default function ServiceCard({ service, onBook }) {
     }
   };
 
-  // Mock additional service data (in real app, this would come from props)
-  const getServiceIcon = (serviceName) => {
+
+  const getServiceIcon = (profession) => {
     const icons = {
-      'Plumbing': '🔧',
-      'Electrical': '⚡',
-      'Cleaning': '🧹',
-      'Gardening': '🌱',
-      'Painting': '🎨',
-      'Carpentry': '🔨',
+      'Plumber': '🔧',
+      'Electrician': '⚡',
+      'Cleaner': '🧹',
+      'Gardener': '🌱',
+      'Painter': '🎨',
+      'Carpenter': '🔨',
       'AC Repair': '❄️',
       'Appliance Repair': '🔧'
     };
-    return icons[serviceName] || '🛠️';
+    return icons[profession] || '🛠️';
   };
 
-  const getServiceFeatures = (serviceName) => {
+  const getServiceFeatures = (profession) => {
     const features = {
-      'Plumbing': ['24/7 Available', 'Licensed', 'Warranty'],
-      'Electrical': ['Certified', 'Safety First', 'Quick Service'],
-      'Cleaning': ['Eco-Friendly', 'Deep Clean', 'Sanitized'],
-      'Gardening': ['Plant Care', 'Seasonal', 'Organic'],
-      'Painting': ['Quality Paint', 'Color Matching', 'Clean Finish'],
-      'Carpentry': ['Custom Work', 'Quality Wood', 'Precision'],
+      'Plumber': ['24/7 Available', 'Licensed', 'Warranty'],
+      'Electrician': ['Certified', 'Safety First', 'Quick Service'],
+      'Cleaner': ['Eco-Friendly', 'Deep Clean', 'Sanitized'],
+      'Gardener': ['Plant Care', 'Seasonal', 'Organic'],
+      'Painter': ['Quality Paint', 'Color Matching', 'Clean Finish'],
+      'Carpenter': ['Custom Work', 'Quality Wood', 'Precision'],
       'AC Repair': ['All Brands', 'Gas Refill', 'Maintenance'],
       'Appliance Repair': ['Home Visit', 'Parts Available', 'Guarantee']
     };
-    return features[serviceName] || ['Professional', 'Reliable', 'Affordable'];
+    return features[profession] || ['Professional', 'Reliable', 'Affordable'];
   };
 
-  const getServiceDescription = (serviceName) => {
+  const getServiceDescription = (profession) => {
     const descriptions = {
-      'Plumbing': 'Expert plumbing services for all your water and drainage needs',
-      'Electrical': 'Safe and reliable electrical work by certified professionals',
-      'Cleaning': 'Professional cleaning services to make your space spotless',
-      'Gardening': 'Transform your garden with expert landscaping and plant care',
-      'Painting': 'Quality painting services for interior and exterior surfaces',
-      'Carpentry': 'Custom woodwork and furniture repair by skilled craftsmen',
+      'Plumber': 'Expert plumbing services for all your water and drainage needs',
+      'Electrician': 'Safe and reliable electrical work by certified professionals',
+      'Cleaner': 'Professional cleaning services to make your space spotless',
+      'Gardener': 'Transform your garden with expert landscaping and plant care',
+      'Painter': 'Quality painting services for interior and exterior surfaces',
+      'Carpenter': 'Custom woodwork and furniture repair by skilled craftsmen',
       'AC Repair': 'Complete air conditioning repair and maintenance services',
       'Appliance Repair': 'Fix all your home appliances with expert technicians'
     };
-    return descriptions[serviceName] || 'Professional service with quality guarantee';
+    return descriptions[profession] || 'Professional service with quality guarantee';
   };
 
-  const isPopular = service.cost > 1000; // Mock logic for popular services
-  const hasDiscount = service.cost % 100 === 0; // Mock logic for discount
+  const isPopular = service.cost > 1000;
+  const hasDiscount = service.cost % 100 === 0;
 
   return (
     <div 
@@ -178,36 +178,31 @@ export default function ServiceCard({ service, onBook }) {
         e.currentTarget.style.borderColor = styles.card.borderColor;
       }}
     >
-      {isPopular && (
-        <div style={styles.popularBadge}>⭐ Popular</div>
-      )}
-      
-      {hasDiscount && (
-        <div style={styles.discountBadge}>💰 Best Value</div>
-      )}
+      {isPopular && <div style={styles.popularBadge}>⭐ Popular</div>}
+      {hasDiscount && <div style={styles.discountBadge}>💰 Best Value</div>}
 
       <div style={styles.header}>
-        <h3 style={styles.serviceName}>{service.name}</h3>
-        <span style={styles.serviceIcon}>
-          {getServiceIcon(service.name)}
-        </span>
+        <h3 style={styles.serviceName}>{service.profession}</h3>
+        <span style={styles.serviceIcon}>{getServiceIcon(service.profession)}</span>
       </div>
 
-      <p style={styles.description}>
-        {getServiceDescription(service.name)}
-      </p>
+      <p style={styles.description}>{getServiceDescription(service.profession)}</p>
 
       <div style={styles.features}>
-        {getServiceFeatures(service.name).map((feature, idx) => (
-          <span key={idx} style={styles.feature}>
-            ✓ {feature}
-          </span>
+        {getServiceFeatures(service.profession).map((feature, idx) => (
+          <span key={idx} style={styles.feature}>✓ {feature}</span>
         ))}
       </div>
 
       <div style={styles.costSection}>
         <span style={styles.costLabel}>Starting from</span>
         <p style={styles.costAmount}>₹{service.cost.toLocaleString()}</p>
+      </div>
+
+      {/* Additional worker details */}
+      <div style={{ marginBottom: '12px', fontSize: '14px', color: '#4a5568' }}>
+        <strong>Provided by:</strong> {service.name}<br />
+        <strong>Location:</strong> {service.location}
       </div>
 
       <button
@@ -224,8 +219,7 @@ export default function ServiceCard({ service, onBook }) {
         }}
         onClick={() => onBook(service)}
       >
-        <span>📅</span>
-        Book Now
+        <span>📅</span> Book Now
       </button>
     </div>
   );
