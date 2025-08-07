@@ -10,6 +10,10 @@ export default function Dashboard() {
     { name: 'Plumber', cost: 200 },
     { name: 'Carpenter', cost: 300 }
   ];
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [bookingDate, setBookingDate] = useState('');
+  const [bookingTime, setBookingTime] = useState('');
   const[selectedService,setSelectedService]=useState(null);
   const [showServiceCategories, setShowServiceCategories] = useState(false);
   const [workers,setWorkers]=useState([]);
@@ -362,6 +366,104 @@ export default function Dashboard() {
   };
 
   return (
+    <>
+    {showBookingModal && (
+      <div style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 9999
+      }}>
+        <div style={{
+          backgroundColor: 'white',
+          padding: '24px',
+          borderRadius: '8px',
+          width: '300px',
+          boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+        }}>
+          <h3 style={{ marginBottom: '12px' }}>Book {selectedWorker?.name}</h3>
+
+          <label>Date:</label>
+          <input
+            type="date"
+            value={bookingDate}
+            onChange={(e) => setBookingDate(e.target.value)}
+            style={{ width: '100%', marginBottom: '12px', padding: '8px' }}
+          />
+
+          <label>Time Slot:</label>
+          <select
+            value={bookingTime}
+            onChange={(e) => setBookingTime(e.target.value)}
+            style={{ width: '100%', marginBottom: '12px', padding: '8px' }}
+          >
+            <option value="">Select Time</option>
+            <option>09:00 AM - 10:00 AM</option>
+            <option>10:00 AM - 11:00 AM</option>
+            <option>01:00 PM - 02:00 PM</option>
+            <option>03:00 PM - 04:00 PM</option>
+          </select>
+
+          <button
+            onClick={async () => {
+              if (!bookingDate || !bookingTime) {
+                alert("Please select date and time");
+                return;
+              }
+
+              const res = await fetch('http://localhost:5000/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  userId: localStorage.getItem('userId'),
+                  workerId: selectedWorker._id,
+                  service: selectedWorker.profession,
+                  date: bookingDate,
+                  time: bookingTime
+                })
+              });
+
+              const data = await res.json();
+              if (res.ok) {
+                alert("Booking confirmed!");
+                setShowBookingModal(false);
+              } else {
+                alert(data.message || "Booking failed.");
+              }
+            }}
+            style={{
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              padding: '8px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              width: '100%',
+              fontWeight: '500'
+            }}
+          >
+            Confirm Booking
+          </button>
+
+          <button
+            onClick={() => setShowBookingModal(false)}
+            style={{
+              marginTop: '8px',
+              backgroundColor: '#e5e7eb',
+              color: '#333',
+              padding: '8px',
+              border: 'none',
+              borderRadius: '6px',
+              width: '100%',
+              cursor: 'pointer'
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    )}
   <div style={styles.container}>
     {/* Full-width Header */}
     <div style={styles.header}>
@@ -525,9 +627,10 @@ export default function Dashboard() {
                           300}
                       </p>
                       <button
-                        onClick={() =>
-                          alert(`You booked ${worker.name} for ${worker.profession}`)
-                        }
+                        onClick={() =>{
+                          setSelectedWorker(worker);
+                          setShowBookingModal(true);
+                        }}
                         style={{
                           marginTop: '12px',
                           padding: '8px 16px',
@@ -643,5 +746,6 @@ export default function Dashboard() {
       </div>
     </div>
   </div>
+  </>
 );
 }

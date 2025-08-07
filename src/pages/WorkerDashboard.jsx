@@ -13,32 +13,47 @@ export default function WorkerDashboard() {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    if (!showProfile) {
-      fetchWorkerDetails();
-      fetchBookings();
-      fetchPayments();
-    }
-  }, [userId, showProfile]);
+  if (!showProfile) {
+    fetchWorkerDetails();
+    fetchPayments();
+  }
+}, [userId, showProfile]);
 
+useEffect(() => {
+  if (worker && worker.userId) {
+    fetchBookings(worker.userId);
+  }
+}, [worker]);
   const fetchWorkerDetails = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/worker/profile/${userId}`);
       const data = await res.json();
-      if (res.ok) setWorker(data);
+      if (res.ok){ 
+        setWorker(data);
+        localStorage.setItem('workerId',data.userId)     
+      }
     } catch (err) {
       console.error('Failed to fetch worker profile:', err);
     }
   };
 
-  const fetchBookings = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/worker/${userId}/bookings`);
-      const data = await res.json();
-      if (res.ok) setBookings(data);
-    } catch (err) {
-      console.error('Failed to fetch bookings:', err);
+  const fetchBookings = async (workerId) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/bookings/worker/${workerId}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      console.log("Fetched bookings:", data);
+      setBookings(data);
+    } else {
+      console.error('Error fetching bookings:', data.message || data);
     }
-  };
+  } catch (err) {
+    console.error('Failed to fetch bookings:', err);
+  }
+};
+
+
 
   const fetchPayments = async () => {
     try {
@@ -84,19 +99,21 @@ export default function WorkerDashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '24px' }}>
         {/* Bookings */}
         <div style={{ background: '#fff', padding: '20px', borderRadius: '8px' }}>
-          <h2>Current Bookings</h2>
-          {bookings.length > 0 ? (
-            <ul>
-              {bookings.map((booking, idx) => (
-                <li key={idx} style={{ marginBottom: '12px' }}>
-                  <strong>{booking.service}</strong> - {booking.date}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No current bookings.</p>
-          )}
-        </div>
+  <h2>Current Bookings</h2>
+  {bookings.length > 0 ? (
+    <ul>
+      {bookings.map((booking, idx) => (
+        <li key={idx} style={{ marginBottom: '12px' }}>
+          <strong>{booking.service}</strong> <br />
+          📅 {booking.date} <br />
+          ⏰ {booking.time}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>No current bookings.</p>
+  )}
+</div>
 
         {/* Payments & Complaints */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
