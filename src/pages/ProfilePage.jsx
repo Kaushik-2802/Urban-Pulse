@@ -6,9 +6,14 @@ export default function ProfilePage() {
     name: '',
     phone: '',
     gender: '',
-    location: '',
-    coordinates: ''
+    address: {
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      country: ''
+    },
   });
+
   const [isLoading, setIsLoading] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
   
@@ -22,7 +27,7 @@ export default function ProfilePage() {
         const res = await fetch(`http://localhost:5000/api/profile/${userId}`);
         if (res.ok) {
           const data = await res.json();
-          setFormData(data.profile);
+          setFormData(data); // Changed from data.profile to just data
           setProfileExists(true);
         } else if (res.status === 404) {
           setProfileExists(false); // No profile, allow creation
@@ -43,7 +48,10 @@ export default function ProfilePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -70,10 +78,19 @@ export default function ProfilePage() {
     }
   };
 
-  // New functions for individual field editing
   const handleBackToDashboard = () => {
-    // Replace with your navigation logic
     window.history.back();
+  };
+
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        [name]: value
+      }
+    }));
   };
 
   const startEditing = (field) => {
@@ -108,7 +125,6 @@ export default function ProfilePage() {
           throw new Error(result.message || 'Failed to update');
         }
       } else {
-        // If no profile exists, just update local state
         setFormData(updatedFormData);
       }
       
@@ -119,6 +135,7 @@ export default function ProfilePage() {
       alert('Error updating field');
     }
   };
+
 
   const renderField = (field, label, type = 'text') => {
     const isEditing = editingField === field;
@@ -282,6 +299,8 @@ export default function ProfilePage() {
     color: '#6b7280'
   }}>Loading profile...</div>;
 
+
+
   const containerStyle = {
     maxWidth: '800px',
     margin: '0 auto',
@@ -402,27 +421,6 @@ export default function ProfilePage() {
           </p>
         </div>
       </div>
-
-      {/* Individual Field Editing Section - Only show if profile exists */}
-      {profileExists && (
-        <div style={formStyle}>
-          <h3 style={{
-            fontSize: '24px',
-            fontWeight: '600',
-            color: '#111827',
-            marginBottom: '24px',
-            textAlign: 'center'
-          }}>
-            Quick Edit Fields
-          </h3>
-          {renderField('name', 'Full Name')}
-          {renderField('phone', 'Phone Number', 'tel')}
-          {renderField('gender', 'Gender')}
-          {renderField('location', 'Location')}
-          {renderField('coordinates', 'Coordinates')}
-        </div>
-      )}
-
       {/* Original Form - Always Available */}
       <div style={originalFormStyle}>
         <h3 style={{
@@ -474,21 +472,40 @@ export default function ProfilePage() {
           </select>
           <input
             type="text"
-            name="location"
-            value={formData.location}
-            placeholder="Location"
-            onChange={handleChange}
-            required
+            name="addressLine1"
+            value={formData.address?.addressLine1 || ""}
+            placeholder="Address Line 1"
+            onChange={handleAddressChange}
             style={inputStyle}
             onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
             onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
           />
           <input
             type="text"
-            name="coordinates"
-            value={formData.coordinates}
-            placeholder="Coordinates"
-            onChange={handleChange}
+            name="addressLine2"
+            value={formData.address?.addressLine2 || ""}
+            placeholder="Address Line 2"
+            onChange={handleAddressChange}
+            style={inputStyle}
+            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <input
+            type="text"
+            name="city"
+            value={formData.address?.city || ""}
+            placeholder="City"
+            onChange={handleAddressChange}
+            style={inputStyle}
+            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <input
+            type="text"
+            name="country"
+            value={formData.address?.country || ""}
+            placeholder="Country"
+            onChange={handleAddressChange}
             style={inputStyle}
             onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
             onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}

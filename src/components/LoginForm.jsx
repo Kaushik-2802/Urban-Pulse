@@ -2,106 +2,103 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginForm({ userType }) {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  const navigate=useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+    setLoading(true);
 
     try {
-      const payload = {
-        ...formData,
-        userType
-      };
-      const endpoint= userType==='worker'?'http://localhost:5000/api/worker/login':'http://localhost:5000/api/auth/login'
+      const endpoint =
+        userType === 'worker'
+          ? 'http://localhost:5000/api/worker/login'
+          : 'http://localhost:5000/api/auth/login';
 
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ ...formData, userType })
       });
 
       const data = await res.json();
-      console.log(data);
+
       if (res.ok) {
         const userId = data.user?._id || data.userId;
-        alert(data.message || 'Login successful');
-        localStorage.setItem('userId',userId);
+        localStorage.setItem('userId', userId);
         localStorage.setItem('userType', data.userType);
-        const type = data.user?.userType || userType;
-        if (type === 'worker') {
-          navigate('/worker/dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        setSuccessMsg(data.message || 'Login successful!');
+        setTimeout(() => {
+          const type = data.user?.userType || userType;
+          navigate(type === 'worker' ? '/worker/dashboard' : '/dashboard');
+        }, 1200);
+      } else {
+        setErrorMsg(data.message || 'Invalid credentials');
       }
-     } catch (error) {
-      console.error(error);
-      alert('Something went wrong');
+    } catch {
+      setErrorMsg('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const styles = {
     formWrapper: {
-      maxWidth: '400px',
-      margin: '40px auto',
-      padding: '30px',
-      backgroundColor: '#f9f9f9',
-      borderRadius: '12px',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+      maxWidth: '420px',
+      margin: '60px auto',
+      padding: '35px',
+      backgroundColor: '#fff',
+      borderRadius: '16px',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+      fontFamily: 'Segoe UI, sans-serif'
     },
-    icon: {
-      fontSize: '40px',
-      textAlign: 'center',
-      marginBottom: '15px'
-    },
-    header: {
-      textAlign: 'center',
-      marginBottom: '20px'
-    },
-    title: {
-      fontSize: '24px',
-      fontWeight: '600',
-      color: '#333',
-      margin: '0 0 8px 0'
-    },
-    subtitle: {
+    icon: { fontSize: '48px', textAlign: 'center', marginBottom: '15px' },
+    header: { textAlign: 'center', marginBottom: '25px' },
+    title: { fontSize: '26px', fontWeight: '700', margin: '0', color: '#222' },
+    subtitle: { fontSize: '14px', color: '#666', marginTop: '6px' },
+    message: {
       fontSize: '14px',
-      color: '#666',
-      margin: '0'
+      padding: '10px',
+      borderRadius: '8px',
+      marginBottom: '15px',
+      textAlign: 'center',
+      animation: 'fadeIn 0.3s ease'
     },
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '20px'
-    },
-    inputGroup: {
-      position: 'relative'
-    },
+    error: { backgroundColor: '#fdecea', color: '#d93025' },
+    success: { backgroundColor: '#e6f4ea', color: '#137333' },
+    form: { display: 'flex', flexDirection: 'column', gap: '18px' },
+    inputGroup: { position: 'relative' },
     input: {
       width: '100%',
-      padding: '12px 16px',
+      padding: '12px 14px',
       border: '2px solid #ddd',
-      borderRadius: '8px',
-      fontSize: '16px',
-      backgroundColor: '#fff',
-      transition: 'border-color 0.3s ease',
+      borderRadius: '10px',
+      fontSize: '15px',
       outline: 'none',
+      transition: 'border-color 0.3s ease',
       boxSizing: 'border-box'
     },
-    inputFocus: {
-      borderColor: '#007bff'
+    inputFocus: { borderColor: '#007bff' },
+    togglePassword: {
+      position: 'absolute',
+      right: '12px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      cursor: 'pointer',
+      fontSize: '14px',
+      color: '#007bff'
     },
     button: {
       width: '100%',
@@ -109,15 +106,21 @@ export default function LoginForm({ userType }) {
       backgroundColor: '#007bff',
       color: 'white',
       border: 'none',
-      borderRadius: '8px',
+      borderRadius: '10px',
       fontSize: '16px',
       fontWeight: '600',
       cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
-      boxSizing: 'border-box'
+      transition: 'background-color 0.3s ease'
     },
-    buttonHover: {
-      backgroundColor: '#0056b3'
+    buttonHover: { backgroundColor: '#0056b3' },
+    spinner: {
+      width: '18px',
+      height: '18px',
+      border: '2px solid white',
+      borderTop: '2px solid transparent',
+      borderRadius: '50%',
+      animation: 'spin 0.6s linear infinite',
+      margin: '0 auto'
     }
   };
 
@@ -126,7 +129,6 @@ export default function LoginForm({ userType }) {
       <div style={styles.icon}>
         {userType === 'public' ? '👤' : '🔧'}
       </div>
-
       <div style={styles.header}>
         <h2 style={styles.title}>Welcome Back</h2>
         <p style={styles.subtitle}>
@@ -134,7 +136,11 @@ export default function LoginForm({ userType }) {
         </p>
       </div>
 
+      {errorMsg && <div style={{ ...styles.message, ...styles.error }}>{errorMsg}</div>}
+      {successMsg && <div style={{ ...styles.message, ...styles.success }}>{successMsg}</div>}
+
       <form onSubmit={handleSubmit} style={styles.form}>
+        {/* Email */}
         <div style={styles.inputGroup}>
           <input
             type="email"
@@ -149,9 +155,10 @@ export default function LoginForm({ userType }) {
           />
         </div>
 
+        {/* Password */}
         <div style={styles.inputGroup}>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             name="password"
             value={formData.password}
             onChange={handleChange}
@@ -161,15 +168,23 @@ export default function LoginForm({ userType }) {
             onBlur={(e) => { e.target.style.borderColor = '#ddd'; }}
             required
           />
+          <span
+            style={styles.togglePassword}
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </span>
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
           style={styles.button}
+          disabled={loading}
           onMouseEnter={(e) => { e.target.style.backgroundColor = styles.buttonHover.backgroundColor; }}
           onMouseLeave={(e) => { e.target.style.backgroundColor = styles.button.backgroundColor; }}
         >
-          Login
+          {loading ? <div style={styles.spinner}></div> : 'Login'}
         </button>
       </form>
     </div>
