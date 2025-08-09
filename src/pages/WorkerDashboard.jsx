@@ -138,6 +138,17 @@ useEffect(() => {
                       </div>
                     </div>
                   </div>
+                  <div style={detailItemStyle}>
+                      <span style={iconStyle}>📍</span>
+                      <div style={detailTextStyle}>
+                        <span style={labelStyle}>Location</span>
+                        <span style={valueStyle}>
+                          {booking.customerAddress 
+                            ? `${booking.customerAddress.addressLine1 || ''}, ${booking.customerAddress.city || ''}, ${booking.customerAddress.country || ''}`
+                            : 'Not provided'}
+                        </span>
+                      </div>
+                  </div>
                   
                   <div style={bookingActionsStyle}>
                     <button style={actionButtonStyle}>View Details</button>
