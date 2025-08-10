@@ -64,6 +64,42 @@ useEffect(() => {
       console.error('Failed to fetch payments:', err);
     }
   };
+  
+  const openGoogleMaps = (destination) => {
+  if (!destination) {
+    alert('Customer address not available for navigation.');
+    return;
+  }
+
+  // Worker (origin) address
+  const originAddress = worker?.address
+    ? `${worker.address.addressLine1 || ''}, ${worker.address.city || ''}, ${worker.address.country || ''}`
+        .replace(/\s+/g, ' ')
+        .trim()
+    : '';
+
+  if (!originAddress) {
+    alert('Worker address is missing. Please update your profile.');
+    return;
+  }
+
+  // Customer (destination) address
+  const destinationAddress = `${destination.addressLine1 || ''}, ${destination.city || ''}, ${destination.country || ''}`
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!destinationAddress) {
+    alert('Customer address is incomplete.');
+    return;
+  }
+
+  // Google Maps URL with both origin & destination
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(destinationAddress)}`;
+
+  window.open(mapsUrl, '_blank');
+};
+
+
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -153,6 +189,12 @@ useEffect(() => {
                   <div style={bookingActionsStyle}>
                     <button style={actionButtonStyle}>View Details</button>
                     <button style={primaryActionButtonStyle}>Mark Complete</button>
+                    <button 
+                      style={secondaryActionButtonStyle} 
+                      onClick={() => openGoogleMaps(booking.customerAddress)}
+                    >
+                      Get Directions
+                    </button>
                   </div>
                 </div>
               ))}
@@ -207,7 +249,19 @@ const buttonStyle = {
   backdropFilter: 'blur(8px)'
 };
 
-// New styles for improved bookings section
+const secondaryActionButtonStyle = {
+  background: '#f9fafb',
+  border: '2px solid #3b82f6',
+  color: '#3b82f6',
+  padding: '10px 20px',
+  borderRadius: '8px',
+  fontSize: '14px',
+  fontWeight: '600',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease'
+};
+
+
 const bookingsSectionStyle = {
   background: '#fff',
   borderRadius: '12px',

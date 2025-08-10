@@ -1,11 +1,141 @@
 import { useState, useEffect } from 'react';
 
 export default function WorkerProfileForm({ userId, onBack }) {
+
+
+function ProfileField({
+  field,
+  value,
+  editingField,
+  editValue,
+  onEdit,
+  onChange,
+  onCancel,
+  onSave,
+  saving,
+  getFieldIcon,
+  getFieldLabel,
+}) {
+  const isEditing = editingField === field;
+
+  if (field === 'serviceAreas') {
+    return (
+      <div style={profileItemStyle}>
+        <div style={itemHeaderStyle}>
+          <div style={labelContainerStyle}>
+            <span style={iconStyle}>{getFieldIcon(field)}</span>
+            <label style={labelStyle}>{getFieldLabel(field)}</label>
+          </div>
+          {!isEditing && (
+            <button onClick={onEdit} style={editButtonStyle} disabled={saving}>
+              Edit
+            </button>
+          )}
+        </div>
+
+        {isEditing ? (
+          <div style={editContainerStyle}>
+            <div style={checkboxContainerStyle}>
+              {['Delhi', 'Mumbai', 'Chennai', 'Bangalore', 'Hyderabad', 'Kolkata', 'Pune', 'Ahmedabad'].map(city => (
+                <label key={city} style={checkboxLabelStyle}>
+                  <input
+                    type="checkbox"
+                    value={city}
+                    checked={editValue.includes(city)}
+                    onChange={e => {
+                      if (e.target.checked) {
+                        onChange([...editValue, city]);
+                      } else {
+                        onChange(editValue.filter(area => area !== city));
+                      }
+                    }}
+                    style={checkboxStyle}
+                  />
+                  <span style={checkboxTextStyle}>{city}</span>
+                </label>
+              ))}
+            </div>
+
+            <div style={editButtonsStyle}>
+              <button onClick={onSave} style={saveButtonStyle} disabled={saving}>
+                {saving ? '...' : '✓'}
+              </button>
+              <button onClick={onCancel} style={cancelButtonStyle} disabled={saving}>
+                ✕
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={valueContainerStyle}>
+            {Array.isArray(value) && value.length > 0 ? (
+              <div style={serviceAreasDisplayStyle}>
+                {value.map((area, idx) => (
+                  <span key={idx} style={serviceAreaTagStyle}>{area}</span>
+                ))}
+              </div>
+            ) : (
+              <span style={placeholderStyle}>No service areas selected</span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // For other fields, render simple text input
+  return (
+    <div style={profileItemStyle}>
+      <div style={itemHeaderStyle}>
+        <div style={labelContainerStyle}>
+          <span style={iconStyle}>{getFieldIcon(field)}</span>
+          <label style={labelStyle}>{getFieldLabel(field)}</label>
+        </div>
+        {!isEditing && (
+          <button onClick={onEdit} style={editButtonStyle} disabled={saving}>
+            Edit
+          </button>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div style={editContainerStyle}>
+          <input
+            type="text"
+            value={editValue || ''}
+            onChange={e => onChange(e.target.value)}
+            style={editInputStyle}
+            placeholder={`Enter ${getFieldLabel(field)}`}
+            autoFocus
+          />
+          <div style={editButtonsStyle}>
+            <button onClick={onSave} style={saveButtonStyle} disabled={saving}>
+              {saving ? '...' : '✓'}
+            </button>
+            <button onClick={onCancel} style={cancelButtonStyle} disabled={saving}>
+              ✕
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div style={valueContainerStyle}>
+          <span style={valueStyle}>{value || <span style={placeholderStyle}>Not provided</span>}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
   const [profile, setProfile] = useState({
     name: '',
     phone: '',
     gender: '',
-    location: '',
+    address: {
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      country: '',
+      pincode: ''
+    },
     profession: '',
     serviceAreas: []
   });
@@ -30,7 +160,13 @@ export default function WorkerProfileForm({ userId, onBack }) {
           name: data.name || '',
           phone: data.phone || '',
           gender: data.gender || '',
-          location: data.location || '',
+          address: {
+            addressLine1: data.address?.addressLine1 || '',
+            addressLine2: data.address?.addressLine2 || '',
+            city: data.address?.city || '',
+            country: data.address?.country || '',
+            pincode: data.address?.pincode || ''
+          },
           profession: data.profession || '',
           serviceAreas: data.serviceAreas || []
         });
@@ -65,31 +201,48 @@ export default function WorkerProfileForm({ userId, onBack }) {
   };
 
   const handleSave = async (field) => {
-    setSaving(true);
-    try {
-      const updatedProfile = { ...profile, [field]: editValue };
-      
-      const res = await fetch('http://localhost:5000/api/worker/profile/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, ...updatedProfile }),
-      });
+  setSaving(true);
+  try {
+    let updatedProfile = { ...profile };
 
-      const data = await res.json();
-      if (res.ok) {
-        setProfile(updatedProfile);
-        setEditingField(null);
-        setEditValue('');
-      } else {
-        alert(data.message || 'Error updating profile');
-      }
-    } catch (err) {
-      console.error('Save failed', err);
-      alert('Error updating profile');
-    } finally {
-      setSaving(false);
+    if (field.startsWith('address.')) {
+      const addrField = field.split('.')[1]; // e.g., 'addressLine1'
+      updatedProfile = {
+        ...profile,
+        address: {
+          ...profile.address,
+          [addrField]: editValue
+        }
+      };
+    } else {
+      updatedProfile = {
+        ...profile,
+        [field]: editValue
+      };
     }
-  };
+
+    const res = await fetch('http://localhost:5000/api/worker/profile/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, ...updatedProfile }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      setProfile(updatedProfile);
+      setEditingField(null);
+      setEditValue('');
+    } else {
+      alert(data.message || 'Error updating profile');
+    }
+  } catch (err) {
+    console.error('Save failed', err);
+    alert('Error updating profile');
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   const getFieldIcon = (field) => {
     const icons = {
@@ -98,7 +251,12 @@ export default function WorkerProfileForm({ userId, onBack }) {
       gender: '⚥',
       location: '📍',
       profession: '💼',
-      serviceAreas: '🗺️'
+      serviceAreas: '🗺️',
+      'address.addressLine1': '🏠',
+      'address.addressLine2': '🏠',
+      'address.city': '🌆',
+      'address.country': '🌍',
+      'address.pincode': '📮'
     };
     return icons[field] || '📝';
   };
@@ -110,7 +268,12 @@ export default function WorkerProfileForm({ userId, onBack }) {
       gender: 'Gender',
       location: 'Location',
       profession: 'Profession',
-      serviceAreas: 'Service Areas'
+      serviceAreas: 'Service Areas',
+      'address.addressLine1': 'Address Line 1',
+      'address.addressLine2': 'Address Line 2',
+      'address.city': 'City',
+      'address.country': 'Country',
+      'address.pincode': 'Pincode'
     };
     return labels[field] || field.charAt(0).toUpperCase() + field.slice(1);
   };
@@ -127,134 +290,60 @@ export default function WorkerProfileForm({ userId, onBack }) {
   }
 
   return (
-    <div style={containerStyle}>
-      <div style={headerStyle}>
-        <h2 style={titleStyle}>Worker Profile</h2>
-        <p style={subtitleStyle}>Manage your professional information</p>
-      </div>
-
-      <div style={profileCardStyle}>
-        {Object.entries(profile).map(([field, value]) => (
-          <div key={field} style={profileItemStyle}>
-            <div style={itemHeaderStyle}>
-              <div style={labelContainerStyle}>
-                <span style={iconStyle}>{getFieldIcon(field)}</span>
-                <label style={labelStyle}>{getFieldLabel(field)}</label>
-              </div>
-              
-              {editingField !== field && (
-                <button
-                  onClick={() => handleEdit(field)}
-                  style={editButtonStyle}
-                  disabled={saving}
-                >
-                  Edit
-                </button>
-              )}
-            </div>
-
-            {editingField === field ? (
-              <div style={editContainerStyle}>
-                {field === 'serviceAreas' ? (
-                  <div style={serviceAreasEditStyle}>
-                    <div style={checkboxContainerStyle}>
-                      {['Delhi', 'Mumbai', 'Chennai', 'Bangalore', 'Hyderabad', 'Kolkata', 'Pune', 'Ahmedabad'].map((city) => (
-                        <label key={city} style={checkboxLabelStyle}>
-                          <input
-                            type="checkbox"
-                            value={city}
-                            checked={editValue.includes(city)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setEditValue([...editValue, city]);
-                              } else {
-                                setEditValue(editValue.filter(area => area !== city));
-                              }
-                            }}
-                            style={checkboxStyle}
-                          />
-                          <span style={checkboxTextStyle}>{city}</span>
-                        </label>
-                      ))}
-                    </div>
-                    <div style={editButtonsStyle}>
-                      <button
-                        onClick={() => handleSave(field)}
-                        style={saveButtonStyle}
-                        disabled={saving}
-                      >
-                        {saving ? '...' : '✓'}
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        style={cancelButtonStyle}
-                        disabled={saving}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <input
-                      type="text"
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      style={editInputStyle}
-                      placeholder={`Enter ${field}`}
-                      autoFocus
-                    />
-                    <div style={editButtonsStyle}>
-                      <button
-                        onClick={() => handleSave(field)}
-                        style={saveButtonStyle}
-                        disabled={saving}
-                      >
-                        {saving ? '...' : '✓'}
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        style={cancelButtonStyle}
-                        disabled={saving}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div style={valueContainerStyle}>
-                <span style={valueStyle}>
-                  {field === 'serviceAreas' ? (
-                    Array.isArray(value) && value.length > 0 ? (
-                      <div style={serviceAreasDisplayStyle}>
-                        {value.map((area, index) => (
-                          <span key={index} style={serviceAreaTagStyle}>
-                            {area}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span style={placeholderStyle}>No service areas selected</span>
-                    )
-                  ) : (
-                    value || <span style={placeholderStyle}>Not provided</span>
-                  )}
-                </span>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <div style={footerStyle}>
-        <button onClick={onBack} style={backButtonStyle}>
-          ← Back
-        </button>
-      </div>
+  <div style={containerStyle}>
+    <div style={headerStyle}>
+      <h2 style={titleStyle}>Worker Profile</h2>
+      <p style={subtitleStyle}>Manage your professional information</p>
     </div>
-  );
+
+    <div style={profileCardStyle}>
+      {/* Render flat fields */}
+      {['name', 'phone', 'gender', 'profession', 'serviceAreas'].map(field => (
+        <ProfileField
+          key={field}
+          field={field}
+          value={profile[field]}
+          editingField={editingField}
+          editValue={editValue}
+          onEdit={() => handleEdit(field)}
+          onChange={(val) => setEditValue(val)}
+          onCancel={handleCancel}
+          onSave={() => handleSave(field)}
+          saving={saving}
+          getFieldIcon={getFieldIcon}
+          getFieldLabel={getFieldLabel}
+        />
+      ))}
+
+      {/* Render nested address fields separately */}
+      {['addressLine1', 'addressLine2', 'city', 'country', 'pincode'].map(addrField => {
+        const field = `address.${addrField}`;
+        return (
+          <ProfileField
+            key={field}
+            field={field}
+            value={profile.address ? profile.address[addrField] : ''}
+            editingField={editingField}
+            editValue={editValue}
+            onEdit={() => handleEdit(field)}
+            onChange={(val) => setEditValue(val)}
+            onCancel={handleCancel}
+            onSave={() => handleSave(field)}
+            saving={saving}
+            getFieldIcon={getFieldIcon}
+            getFieldLabel={getFieldLabel}
+          />
+        );
+      })}
+    </div>
+
+    <div style={footerStyle}>
+      <button onClick={onBack} style={backButtonStyle}>
+        ← Back
+      </button>
+    </div>
+  </div>
+);
 }
 
 const containerStyle = {
