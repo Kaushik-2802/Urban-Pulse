@@ -663,6 +663,8 @@ return (
       <p style={{ color: '#6b7280' }}>Plan and manage your events</p>
     </div>
 
+    
+
     {/* Nearby Schools box */}
     <div
       style={{
@@ -718,6 +720,25 @@ return (
         Traffic Situation
       </h3>
       <p style={{ color: '#6b7280' }}>Check current traffic updates</p>
+    </div>
+
+    {/* Event Management box */}
+    <div
+      style={{
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        padding: '24px',
+        backgroundColor: '#fff',
+        cursor: 'pointer',
+        textAlign: 'center',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      }}
+      onClick={() => alert('Event Management clicked!')}
+    >
+      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+        Report Your Issues
+      </h3>
+      <p style={{ color: '#6b7280' }}>Real time issue reporting</p>
     </div>
   </>
 )}

@@ -53,8 +53,6 @@ useEffect(() => {
   }
 };
 
-
-
   const fetchPayments = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/worker/${userId}/payments`);
@@ -64,7 +62,7 @@ useEffect(() => {
       console.error('Failed to fetch payments:', err);
     }
   };
-  
+
   const openGoogleMaps = (destination) => {
   if (!destination) {
     alert('Customer address not available for navigation.');
