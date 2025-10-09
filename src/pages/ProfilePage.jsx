@@ -17,7 +17,6 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
   
-  // New state for individual field editing
   const [editingField, setEditingField] = useState(null);
   const [tempValue, setTempValue] = useState('');
 
@@ -27,10 +26,10 @@ export default function ProfilePage() {
         const res = await fetch(`http://localhost:5000/api/profile/${userId}`);
         if (res.ok) {
           const data = await res.json();
-          setFormData(data); // Changed from data.profile to just data
+          setFormData(data); 
           setProfileExists(true);
         } else if (res.status === 404) {
-          setProfileExists(false); // No profile, allow creation
+          setProfileExists(false);
         } else {
           throw new Error('Unexpected error');
         }
@@ -105,11 +104,9 @@ export default function ProfilePage() {
 
   const saveField = async () => {
     try {
-      // Update the form data
       const updatedFormData = { ...formData, [editingField]: tempValue };
       
       if (profileExists) {
-        // If profile exists, update it via API
         const payload = { ...updatedFormData, userId };
         const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
           method: 'PUT',
