@@ -44,14 +44,13 @@ export default function Dashboard() {
     alert(`You booked ${service.name} service for ₹${service.cost}`);
   };
 
-
-
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       localStorage.removeItem('userId');
       window.location.href = '/';
     }
   };
+  
   const fetchWorkersByProfession=async(profession)=>{
     try{
       const res=await fetch(`http://localhost:5000/api/worker/${profession}`);
@@ -90,17 +89,22 @@ export default function Dashboard() {
   const styles = {
     container: {
       minHeight: '100vh',
-      backgroundColor: '#f9fafb',
-      padding: '0'
+      background: '#0a0a0a',
+      padding: '0',
+      margin: '0',
+      width: '100%'
     },
     wrapper: {
-      maxWidth: '1280px',
+      maxWidth: '1400px',
       margin: '0 auto',
       padding: '0 24px'
     },
     header: {
       width: '100%',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'rgba(15, 23, 42, 0.8)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
       padding: '32px 0',
       color: 'white',
       position: 'relative',
@@ -113,13 +117,13 @@ export default function Dashboard() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.1)',
+      background: 'radial-gradient(circle at top right, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
       zIndex: 1
     },
     headerContent: {
       position: 'relative',
       zIndex: 2,
-      maxWidth: '1280px',
+      maxWidth: '1400px',
       margin: '0 auto',
       padding: '0 24px',
       display: 'flex',
@@ -135,63 +139,36 @@ export default function Dashboard() {
       gap: '12px'
     },
     profileButton: {
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      borderRadius: '8px',
-      padding: '8px 16px',
+      background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+      border: 'none',
+      borderRadius: '12px',
+      padding: '10px 20px',
       color: 'white',
       fontSize: '14px',
-      fontWeight: '500',
+      fontWeight: '600',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      transition: 'all 0.2s ease',
-      backdropFilter: 'blur(10px)',
+      transition: 'all 0.3s ease',
+      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
       textDecoration: 'none'
     },
     logoutButton: {
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
-      borderRadius: '8px',
-      padding: '8px 16px',
-      color: 'white',
+      background: 'rgba(239, 68, 68, 0.2)',
+      border: '1px solid rgba(239, 68, 68, 0.3)',
+      borderRadius: '12px',
+      padding: '10px 20px',
+      color: '#fca5a5',
       fontSize: '14px',
-      fontWeight: '500',
+      fontWeight: '600',
       cursor: 'pointer',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      transition: 'all 0.2s ease',
+      transition: 'all 0.3s ease',
       backdropFilter: 'blur(10px)',
       textDecoration: 'none'
-    },
-    userInfo: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      backgroundColor: 'rgba(255, 255, 255, 0.15)',
-      borderRadius: '12px',
-      padding: '8px 12px',
-      backdropFilter: 'blur(10px)'
-    },
-    userAvatar: {
-      width: '32px',
-      height: '32px',
-      borderRadius: '50%',
-      backgroundColor: 'rgba(255, 255, 255, 0.3)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '14px',
-      fontWeight: '600',
-      color: 'white'
-    },
-    userName: {
-      fontSize: '14px',
-      fontWeight: '500',
-      color: 'white',
-      margin: 0
     },
     titleContainer: {
       display: 'flex',
@@ -199,38 +176,42 @@ export default function Dashboard() {
       marginBottom: '12px'
     },
     titleIcon: {
-      width: '40px',
-      height: '40px',
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-      borderRadius: '12px',
+      width: '50px',
+      height: '50px',
+      background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+      borderRadius: '16px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: '16px',
-      backdropFilter: 'blur(10px)'
+      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)'
     },
     title: {
-      fontSize: '36px',
-      fontWeight: '700',
-      color: 'white',
+      fontSize: '42px',
+      fontWeight: '800',
+      background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
       margin: 0,
-      textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+      letterSpacing: '-1px'
     },
     subtitle: {
-      color: 'rgba(255, 255, 255, 0.9)',
+      color: 'rgba(255, 255, 255, 0.7)',
       fontSize: '16px',
       fontWeight: '400',
       margin: 0,
-      textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+      lineHeight: '1.6'
     },
     decorativeElement: {
       position: 'absolute',
       top: '-50px',
       right: '-50px',
-      width: '120px',
-      height: '120px',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      width: '200px',
+      height: '200px',
+      background: 'radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%)',
       borderRadius: '50%',
+      filter: 'blur(60px)',
       zIndex: 1
     },
     mainGrid: {
@@ -239,31 +220,39 @@ export default function Dashboard() {
       gap: '32px'
     },
     servicesSection: {
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #e5e7eb',
-      padding: '24px'
+      background: 'rgba(15, 23, 42, 0.6)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '24px',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+      padding: '32px'
     },
     sectionHeader: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: '24px'
+      marginBottom: '28px'
     },
     sectionTitle: {
-      fontSize: '20px',
-      fontWeight: '600',
-      color: '#111827'
+      fontSize: '24px',
+      fontWeight: '700',
+      background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text'
     },
     servicesCount: {
       fontSize: '14px',
-      color: '#6b7280'
+      color: 'rgba(255, 255, 255, 0.6)',
+      background: 'rgba(59, 130, 246, 0.1)',
+      padding: '6px 16px',
+      borderRadius: '20px',
+      border: '1px solid rgba(59, 130, 246, 0.2)'
     },
     servicesGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '16px'
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: '20px'
     },
     sidebar: {
       display: 'flex',
@@ -271,112 +260,134 @@ export default function Dashboard() {
       gap: '24px'
     },
     sidebarCard: {
-      backgroundColor: 'white',
-      borderRadius: '8px',
-      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #e5e7eb',
-      padding: '24px'
+      background: 'rgba(15, 23, 42, 0.6)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '24px',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+      padding: '32px'
     },
     paymentHeader: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: '16px'
+      marginBottom: '20px'
     },
     badge: {
       display: 'inline-flex',
       alignItems: 'center',
-      padding: '2px 10px',
-      borderRadius: '9999px',
+      padding: '6px 14px',
+      borderRadius: '20px',
       fontSize: '12px',
-      fontWeight: '500',
-      backgroundColor: '#fee2e2',
-      color: '#991b1b'
+      fontWeight: '600',
+      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%)',
+      color: '#fca5a5',
+      border: '1px solid rgba(239, 68, 68, 0.3)'
     },
     complaintTitle: {
-      fontSize: '20px',
-      fontWeight: '600',
-      color: '#111827',
-      marginBottom: '16px'
+      fontSize: '24px',
+      fontWeight: '700',
+      background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      marginBottom: '20px'
     },
     statsGrid: {
       marginTop: '32px',
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap: '16px'
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: '20px'
     },
     statCard: {
-      borderRadius: '8px',
-      padding: '16px',
+      borderRadius: '20px',
+      padding: '24px',
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      backdropFilter: 'blur(20px)',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer'
     },
     statCardBlue: {
-      backgroundColor: '#dbeafe',
-      border: '1px solid #93c5fd'
+      background: 'rgba(59, 130, 246, 0.1)',
+      boxShadow: '0 8px 25px rgba(59, 130, 246, 0.2)'
     },
     statCardYellow: {
-      backgroundColor: '#fef3c7',
-      border: '1px solid #fcd34d'
+      background: 'rgba(234, 179, 8, 0.1)',
+      boxShadow: '0 8px 25px rgba(234, 179, 8, 0.2)'
     },
     statCardGreen: {
-      backgroundColor: '#d1fae5',
-      border: '1px solid #6ee7b7'
+      background: 'rgba(16, 185, 129, 0.1)',
+      boxShadow: '0 8px 25px rgba(16, 185, 129, 0.2)'
     },
     statIcon: {
-      width: '32px',
-      height: '32px',
-      borderRadius: '50%',
+      width: '48px',
+      height: '48px',
+      borderRadius: '14px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: '12px'
+      marginRight: '16px'
     },
     statIconBlue: {
-      backgroundColor: '#3b82f6'
+      background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+      boxShadow: '0 6px 20px rgba(59, 130, 246, 0.4)'
     },
     statIconYellow: {
-      backgroundColor: '#eab308'
+      background: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)',
+      boxShadow: '0 6px 20px rgba(234, 179, 8, 0.4)'
     },
     statIconGreen: {
-      backgroundColor: '#10b981'
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)'
     },
     statText: {
       fontSize: '14px',
       fontWeight: '500',
-      margin: '0 0 4px 0'
+      margin: '0 0 6px 0'
     },
     statTextBlue: {
-      color: '#1e3a8a'
+      color: '#93c5fd'
     },
     statTextYellow: {
-      color: '#92400e'
+      color: '#fde047'
     },
     statTextGreen: {
-      color: '#064e3b'
+      color: '#6ee7b7'
     },
     statNumber: {
-      fontSize: '24px',
-      fontWeight: 'bold',
+      fontSize: '28px',
+      fontWeight: '800',
       margin: '0'
     },
     statNumberBlue: {
-      color: '#1d4ed8'
+      color: '#60a5fa'
     },
     statNumberYellow: {
-      color: '#d97706'
+      color: '#facc15'
     },
     statNumberGreen: {
-      color: '#059669'
+      color: '#34d399'
     }
   };
 
   const handleButtonHover = (e, isHover) => {
     if (isHover) {
-      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-      e.target.style.transform = 'translateY(-1px)';
+      e.target.style.transform = 'translateY(-2px)';
+      e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.6)';
     } else {
-      e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+      e.target.style.transform = 'translateY(0)';
+      e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
+    }
+  };
+
+  const handleLogoutHover = (e, isHover) => {
+    if (isHover) {
+      e.target.style.background = 'rgba(239, 68, 68, 0.3)';
+      e.target.style.transform = 'translateY(-2px)';
+    } else {
+      e.target.style.background = 'rgba(239, 68, 68, 0.2)';
       e.target.style.transform = 'translateY(0)';
     }
   };
@@ -392,7 +403,8 @@ return (
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(10px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -401,28 +413,72 @@ return (
       >
         <div
           style={{
-            backgroundColor: 'white',
-            padding: '24px',
-            borderRadius: '8px',
-            width: '300px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            background: 'rgba(30, 41, 59, 0.95)',
+            backdropFilter: 'blur(20px)',
+            padding: '32px',
+            borderRadius: '24px',
+            width: '400px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
           }}
         >
-          <h3 style={{ marginBottom: '12px' }}>Book {selectedWorker?.name}</h3>
+          <h3 style={{ 
+            marginBottom: '24px', 
+            fontSize: '24px',
+            fontWeight: '700',
+            background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Book {selectedWorker?.name}
+          </h3>
 
-          <label>Date:</label>
+          <label style={{ 
+            color: 'rgba(255, 255, 255, 0.9)', 
+            fontWeight: '600', 
+            fontSize: '14px',
+            display: 'block',
+            marginBottom: '8px'
+          }}>Date:</label>
           <input
             type="date"
             value={bookingDate}
             onChange={(e) => setBookingDate(e.target.value)}
-            style={{ width: '100%', marginBottom: '12px', padding: '8px' }}
+            style={{ 
+              width: '100%', 
+              marginBottom: '20px', 
+              padding: '12px',
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '14px',
+              boxSizing: 'border-box'
+            }}
           />
 
-          <label>Time Slot:</label>
+          <label style={{ 
+            color: 'rgba(255, 255, 255, 0.9)', 
+            fontWeight: '600', 
+            fontSize: '14px',
+            display: 'block',
+            marginBottom: '8px'
+          }}>Time Slot:</label>
           <select
             value={bookingTime}
             onChange={(e) => setBookingTime(e.target.value)}
-            style={{ width: '100%', marginBottom: '12px', padding: '8px' }}
+            style={{ 
+              width: '100%', 
+              marginBottom: '20px', 
+              padding: '12px',
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '14px',
+              boxSizing: 'border-box'
+            }}
           >
             <option value="">Select Time</option>
             <option>09:00 AM - 10:00 AM</option>
@@ -431,13 +487,29 @@ return (
             <option>03:00 PM - 04:00 PM</option>
           </select>
 
-          <label>Hours:</label>
+          <label style={{ 
+            color: 'rgba(255, 255, 255, 0.9)', 
+            fontWeight: '600', 
+            fontSize: '14px',
+            display: 'block',
+            marginBottom: '8px'
+          }}>Hours:</label>
           <input
             type="number"
             min="1"
             value={hours}
             onChange={(e) => setHours(Number(e.target.value))}
-            style={{ width: '100%', marginBottom: '12px', padding: '8px' }}
+            style={{ 
+              width: '100%', 
+              marginBottom: '20px', 
+              padding: '12px',
+              background: 'rgba(15, 23, 42, 0.6)',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '14px',
+              boxSizing: 'border-box'
+            }}
           />
 
           <button
@@ -464,31 +536,45 @@ return (
               }
             }}
             style={{
-              backgroundColor: '#10b981',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               color: 'white',
-              padding: '8px',
+              padding: '12px',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '12px',
               cursor: 'pointer',
               width: '100%',
-              fontWeight: '500',
-              marginBottom: '8px',
+              fontWeight: '600',
+              fontSize: '14px',
+              marginBottom: '12px',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.4)';
             }}
           >
             Get Estimated Cost
           </button>
 
-          {/* Display estimated cost if available */}
           {estimatedCost !== null && (
             <p
               style={{
-                marginBottom: '12px',
-                color: '#111827',
-                fontWeight: '500',
+                marginBottom: '20px',
+                color: 'rgba(255, 255, 255, 0.9)',
+                fontWeight: '600',
+                background: 'rgba(59, 130, 246, 0.1)',
+                padding: '12px',
+                borderRadius: '12px',
+                border: '1px solid rgba(59, 130, 246, 0.2)'
               }}
             >
               Estimated Cost: ₹{estimatedCost} <br />
-              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+              <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)', fontWeight: '400' }}>
                 * Materials must be provided by the user.
               </span>
             </p>
@@ -522,14 +608,25 @@ return (
               }
             }}
             style={{
-              backgroundColor: '#3b82f6',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
               color: 'white',
-              padding: '8px',
+              padding: '12px',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '12px',
               cursor: 'pointer',
               width: '100%',
-              fontWeight: '500',
+              fontWeight: '600',
+              fontSize: '14px',
+              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
             }}
           >
             Confirm Booking
@@ -538,14 +635,23 @@ return (
           <button
             onClick={() => setShowBookingModal(false)}
             style={{
-              marginTop: '8px',
-              backgroundColor: '#e5e7eb',
-              color: '#333',
-              padding: '8px',
-              border: 'none',
-              borderRadius: '6px',
+              marginTop: '12px',
+              background: 'rgba(239, 68, 68, 0.2)',
+              color: '#fca5a5',
+              padding: '12px',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '12px',
               width: '100%',
               cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '14px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(239, 68, 68, 0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(239, 68, 68, 0.2)';
             }}
           >
             Cancel
@@ -564,7 +670,7 @@ return (
           <div style={styles.headerLeft}>
             <div style={styles.titleContainer}>
               <div style={styles.titleIcon}>
-                <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+                <svg width="28" height="28" fill="white" viewBox="0 0 24 24">
                   <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
                 </svg>
               </div>
@@ -592,8 +698,8 @@ return (
             <button
               style={styles.logoutButton}
               onClick={handleLogout}
-              onMouseEnter={(e) => handleButtonHover(e, true)}
-              onMouseLeave={(e) => handleButtonHover(e, false)}
+              onMouseEnter={(e) => handleLogoutHover(e, true)}
+              onMouseLeave={(e) => handleLogoutHover(e, false)}
             >
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z" />
@@ -626,20 +732,44 @@ return (
     {/* Services box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
       onClick={() => setShowServiceCategories(true)}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#3b82f6';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(59, 130, 246, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(59, 130, 246, 0.4)'
+      }}>🔧</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Services
       </h3>
-      <p style={{ color: '#6b7280' }}>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>
         Click to view all available service categories
       </p>
     </div>
@@ -647,98 +777,216 @@ return (
     {/* Event Management box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
       onClick={() => alert('Event Management clicked!')}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#8b5cf6';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(139, 92, 246, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(139, 92, 246, 0.4)'
+      }}>🎉</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Event Management
       </h3>
-      <p style={{ color: '#6b7280' }}>Plan and manage your events</p>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>Plan and manage your events</p>
     </div>
-
-    
 
     {/* Nearby Schools box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
       onClick={() => alert('Nearby Schools clicked!')}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#10b981';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(16, 185, 129, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(16, 185, 129, 0.4)'
+      }}>🏫</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Nearby Schools
       </h3>
-      <p style={{ color: '#6b7280' }}>Find schools around you</p>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>Find schools around you</p>
     </div>
 
     {/* Nearby Hospitals box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
       onClick={() => alert('Nearby Hospitals clicked!')}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#ef4444';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(239, 68, 68, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(239, 68, 68, 0.4)'
+      }}>🏥</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Nearby Hospitals
       </h3>
-      <p style={{ color: '#6b7280' }}>Find hospitals near you</p>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>Find hospitals near you</p>
     </div>
 
     {/* Traffic Situation box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
       onClick={() => alert('Traffic Situation clicked!')}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#f59e0b';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(245, 158, 11, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(245, 158, 11, 0.4)'
+      }}>🚦</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Traffic Situation
       </h3>
-      <p style={{ color: '#6b7280' }}>Check current traffic updates</p>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>Check current traffic updates</p>
     </div>
 
-    {/* Event Management box */}
+    {/* Report Issues box */}
     <div
       style={{
-        border: '1px solid #e5e7eb',
-        borderRadius: '8px',
-        padding: '24px',
-        backgroundColor: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '16px',
+        padding: '28px',
+        background: 'rgba(30, 41, 59, 0.5)',
+        backdropFilter: 'blur(10px)',
         cursor: 'pointer',
         textAlign: 'center',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        transition: 'all 0.3s ease'
       }}
-      onClick={() => alert('Event Management clicked!')}
+      onClick={() => alert('Report Your Issues clicked!')}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-5px)';
+        e.currentTarget.style.borderColor = '#06b6d4';
+        e.currentTarget.style.boxShadow = '0 12px 30px rgba(6, 182, 212, 0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      }}
     >
-      <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
+      <div style={{
+        width: '60px',
+        height: '60px',
+        background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+        borderRadius: '16px',
+        margin: '0 auto 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 20px rgba(6, 182, 212, 0.4)'
+      }}>📝</div>
+      <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '12px', color: 'white' }}>
         Report Your Issues
       </h3>
-      <p style={{ color: '#6b7280' }}>Real time issue reporting</p>
+      <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '14px' }}>Real time issue reporting</p>
     </div>
   </>
 )}
@@ -753,17 +1001,41 @@ return (
                       fetchWorkersByProfession(service.name);
                     }}
                     style={{
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      padding: '24px',
-                      backgroundColor: '#fff',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '16px',
+                      padding: '28px',
+                      background: 'rgba(30, 41, 59, 0.5)',
+                      backdropFilter: 'blur(10px)',
                       cursor: 'pointer',
                       textAlign: 'center',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-5px)';
+                      e.currentTarget.style.borderColor = '#3b82f6';
+                      e.currentTarget.style.boxShadow = '0 12px 30px rgba(59, 130, 246, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
                     }}
                   >
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                      borderRadius: '16px',
+                      margin: '0 auto 16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '28px',
+                      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.4)'
+                    }}>⚙️</div>
                     <h3
-                      style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}
+                      style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: 'white' }}
                     >
                       {service.name}
                     </h3>
@@ -780,38 +1052,71 @@ return (
                         <div
                           key={idx}
                           style={{
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '8px',
-                            padding: '24px',
-                            backgroundColor: '#fff',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            background: 'rgba(30, 41, 59, 0.5)',
+                            backdropFilter: 'blur(10px)',
                             textAlign: 'center',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                            transition: 'all 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-5px)';
+                            e.currentTarget.style.boxShadow = '0 12px 30px rgba(59, 130, 246, 0.3)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
                           }}
                         >
+                          <div style={{
+                            width: '70px',
+                            height: '70px',
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                            borderRadius: '50%',
+                            margin: '0 auto 16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '32px',
+                            boxShadow: '0 8px 20px rgba(59, 130, 246, 0.4)'
+                          }}>👷</div>
                           <h3
                             style={{
-                              fontSize: '18px',
-                              fontWeight: '600',
+                              fontSize: '20px',
+                              fontWeight: '700',
                               marginBottom: '8px',
+                              color: 'white'
                             }}
                           >
                             {worker.name}
                           </h3>
-                          <p>{worker.location}</p>
+                          <p style={{ color: 'rgba(255, 255, 255, 0.6)', marginBottom: '16px' }}>{worker.location}</p>
                           <button
                             onClick={() => {
                               setSelectedWorker(worker);
                               setShowBookingModal(true);
                             }}
                             style={{
-                              marginTop: '12px',
-                              padding: '8px 16px',
-                              borderRadius: '8px',
-                              backgroundColor: '#3b82f6',
-                              color: '#fff',
+                              padding: '12px 24px',
+                              borderRadius: '12px',
+                              background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                              color: 'white',
                               border: 'none',
                               cursor: 'pointer',
-                              fontWeight: '500',
+                              fontWeight: '600',
+                              fontSize: '14px',
+                              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
+                              transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.transform = 'translateY(-2px)';
+                              e.target.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.6)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.transform = 'translateY(0)';
+                              e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
                             }}
                           >
                             Book Now
@@ -819,7 +1124,7 @@ return (
                         </div>
                       ))
                     ) : (
-                      <p>No workers available for {selectedService}</p>
+                      <p style={{ color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center', padding: '20px' }}>No workers available for {selectedService}</p>
                     )}
                   </div>
 
@@ -830,12 +1135,21 @@ return (
                     }}
                     style={{
                       marginTop: '32px',
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      backgroundColor: '#e5e7eb',
-                      border: 'none',
+                      padding: '12px 24px',
+                      borderRadius: '12px',
+                      background: 'rgba(100, 116, 139, 0.3)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      color: 'rgba(255, 255, 255, 0.9)',
                       cursor: 'pointer',
-                      fontWeight: '500',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = 'rgba(100, 116, 139, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'rgba(100, 116, 139, 0.3)';
                     }}
                   >
                     ← Back to Services
@@ -853,12 +1167,21 @@ return (
                 }}
                 style={{
                   marginTop: '32px',
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  backgroundColor: '#e5e7eb',
-                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  background: 'rgba(100, 116, 139, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: 'rgba(255, 255, 255, 0.9)',
                   cursor: 'pointer',
-                  fontWeight: '500',
+                  fontWeight: '600',
+                  fontSize: '14px',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'rgba(100, 116, 139, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(100, 116, 139, 0.3)';
                 }}
               >
                 ← Back to Services Overview
@@ -885,11 +1208,21 @@ return (
 
         {/* Quick Stats Row */}
         <div style={styles.statsGrid}>
-          <div style={{ ...styles.statCard, ...styles.statCardBlue }}>
+          <div 
+            style={{ ...styles.statCard, ...styles.statCardBlue }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(59, 130, 246, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.2)';
+            }}
+          >
             <div style={{ ...styles.statIcon, ...styles.statIconBlue }}>
               <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 fill="white"
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
@@ -905,11 +1238,21 @@ return (
             </div>
           </div>
 
-          <div style={{ ...styles.statCard, ...styles.statCardYellow }}>
+          <div 
+            style={{ ...styles.statCard, ...styles.statCardYellow }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(234, 179, 8, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(234, 179, 8, 0.2)';
+            }}
+          >
             <div style={{ ...styles.statIcon, ...styles.statIconYellow }}>
               <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 fill="white"
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
@@ -925,11 +1268,21 @@ return (
             </div>
           </div>
 
-          <div style={{ ...styles.statCard, ...styles.statCardGreen }}>
+          <div 
+            style={{ ...styles.statCard, ...styles.statCardGreen }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.2)';
+            }}
+          >
             <div style={{ ...styles.statIcon, ...styles.statIconGreen }}>
               <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
                 fill="white"
                 viewBox="0 0 24 24"
                 strokeLinecap="round"
@@ -946,6 +1299,55 @@ return (
           </div>
         </div>
       </div>
+
+      <style>
+        {`
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+
+          body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+          }
+
+          input, select {
+            font-family: inherit;
+          }
+
+          input::placeholder,
+          textarea::placeholder,
+          select option {
+            color: rgba(255, 255, 255, 0.4);
+          }
+
+          * {
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 #1e293b;
+          }
+
+          *::-webkit-scrollbar {
+            width: 10px;
+          }
+
+          *::-webkit-scrollbar-track {
+            background: #1e293b;
+          }
+
+          *::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 10px;
+          }
+
+          *::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+          }
+        `}
+      </style>
     </div>
   </>
 );

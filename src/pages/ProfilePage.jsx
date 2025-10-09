@@ -19,6 +19,7 @@ export default function ProfilePage() {
   
   const [editingField, setEditingField] = useState(null);
   const [tempValue, setTempValue] = useState('');
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -132,7 +133,6 @@ export default function ProfilePage() {
       alert('Error updating field');
     }
   };
-    const [previewImage, setPreviewImage] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -148,7 +148,6 @@ export default function ProfilePage() {
       reader.readAsDataURL(file);
     }
   };
-
 
   const renderField = (field, label, type = "text") => {
     const isEditing = editingField === field;
@@ -220,136 +219,248 @@ export default function ProfilePage() {
     );
   };
 
-  if (isLoading) return <div className="loading">Loading profile...</div>;
+  if (isLoading) {
+    return (
+      <div className="loading">
+        <div className="loading-spinner"></div>
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <button onClick={() => window.history.back()} className="btn back">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6"></polyline>
-          </svg>
-          Dashboard
-        </button>
-        <h2>My Profile</h2>
-        <div className="profile-status">
-          <span className="status-badge">Active</span>
-        </div>
+      {/* Animated Background */}
+      <div className="background-decoration">
+        <div className="bg-circle bg-circle-1"></div>
+        <div className="bg-circle bg-circle-2"></div>
+        <div className="bg-circle bg-circle-3"></div>
       </div>
 
-      {/* Profile Picture */}
-      <div className="profile-pic-section">
-        <div className="profile-pic">
-          {previewImage ? (
-            <img src={previewImage} alt="Profile" />
-          ) : (
-            <div className="no-pic">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <div className="profile-wrapper">
+        {/* Header */}
+        <div className="profile-header">
+          <button onClick={() => window.history.back()} className="btn back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="15,18 9,12 15,6"></polyline>
+            </svg>
+            Dashboard
+          </button>
+          <h2>My Profile</h2>
+          <div className="profile-status">
+            <span className="status-badge">Active</span>
+          </div>
+        </div>
+
+        {/* Profile Picture Section */}
+        <div className="profile-pic-section">
+          <div className="profile-pic">
+            {previewImage ? (
+              <img src={previewImage} alt="Profile" />
+            ) : (
+              <div className="no-pic">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+            )}
+            <div className="pic-overlay">
+              <label className="pic-upload">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+              </label>
+            </div>
+          </div>
+          <h3 className="profile-name">{formData.name || 'User Name'}</h3>
+          <p className="profile-subtitle">Member since 2024</p>
+        </div>
+
+        {/* Personal Information */}
+        <div className="section">
+          <div className="section-header">
+            <h4 className="section-title">Personal Information</h4>
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
-          )}
-          <div className="pic-overlay">
-            <label className="pic-upload">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7,10 12,15 17,10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <input type="file" accept="image/*" onChange={handleImageChange} hidden />
-            </label>
+          </div>
+          <div className="fields-grid">
+            {renderField("name", "Full Name")}
+            {renderField("phone", "Phone Number", "tel")}
+            {renderField("gender", "Gender")}
           </div>
         </div>
-        <h3 className="profile-name">{formData.name}</h3>
-        <p className="profile-subtitle">Member since 2024</p>
-      </div>
 
-      {/* Personal Information */}
-      <div className="section">
-        <h4 className="section-title">Personal Information</h4>
-        <div className="fields-grid">
-          {renderField("name", "Full Name")}
-          {renderField("phone", "Phone Number", "tel")}
-          {renderField("gender", "Gender")}
-        </div>
-      </div>
-
-      {/* Address Information */}
-      <div className="section">
-        <h4 className="section-title">Address Information</h4>
-        <div className="fields-grid">
-          {renderField("address.addressLine1", "Address Line 1")}
-          {renderField("address.addressLine2", "Address Line 2")}
-          {renderField("address.city", "City")}
-          {renderField("address.country", "Country")}
+        {/* Address Information */}
+        <div className="section">
+          <div className="section-header">
+            <h4 className="section-title">Address Information</h4>
+            <div className="section-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+          </div>
+          <div className="fields-grid">
+            {renderField("address.addressLine1", "Address Line 1")}
+            {renderField("address.addressLine2", "Address Line 2")}
+            {renderField("address.city", "City")}
+            {renderField("address.country", "Country")}
+          </div>
         </div>
       </div>
 
       <style>
         {`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body, html {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          overflow-x: hidden;
+        }
+
         .profile-container {
-          max-width: 900px;
-          margin: 20px auto;
+          min-height: 100vh;
+          background: #0a0a0a;
           padding: 0;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          min-height: 100vh;
-          border-radius: 0;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .background-decoration {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .bg-circle {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          opacity: 0.15;
+          animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-circle-1 {
+          width: 400px;
+          height: 400px;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%);
+          top: 10%;
+          right: 10%;
+          animation-delay: 0s;
+        }
+
+        .bg-circle-2 {
+          width: 350px;
+          height: 350px;
+          background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+          bottom: 20%;
+          left: 5%;
+          animation-delay: 2s;
+        }
+
+        .bg-circle-3 {
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          animation-delay: 4s;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-30px); }
+        }
+
+        .profile-wrapper {
+          max-width: 1000px;
+          margin: 0 auto;
+          position: relative;
+          z-index: 1;
         }
 
         .profile-header {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          padding: 20px 30px;
+          background: rgba(15, 23, 42, 0.8);
+          backdropFilter: blur(20px);
+          WebkitBackdropFilter: blur(20px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 24px 32px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          color: white;
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
 
         .profile-header h2 {
           margin: 0;
-          font-size: 28px;
-          font-weight: 600;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-size: 32px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
+          WebkitBackgroundClip: text;
+          WebkitTextFillColor: transparent;
+          backgroundClip: text;
+          letterSpacing: -1px;
         }
 
         .status-badge {
-          background: linear-gradient(45deg, #4facfe, #00f2fe);
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
-          padding: 6px 16px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+          padding: 8px 20px;
+          borderRadius: 20px;
+          fontSize: 13px;
+          fontWeight: 700;
+          textTransform: uppercase;
+          letterSpacing: 0.5px;
+          boxShadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
 
         .profile-pic-section {
           text-align: center;
-          padding: 40px 20px;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(10px);
+          padding: 60px 32px;
+          background: rgba(15, 23, 42, 0.6);
+          backdropFilter: blur(20px);
+          borderBottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .profile-pic {
-          width: 140px;
-          height: 140px;
-          margin: 0 auto 20px;
+          width: 160px;
+          height: 160px;
+          margin: 0 auto 24px;
           border-radius: 50%;
           overflow: hidden;
-          border: 4px solid rgba(255, 255, 255, 0.3);
+          border: 4px solid rgba(59, 130, 246, 0.3);
           position: relative;
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(30, 41, 59, 0.8);
           transition: all 0.3s ease;
+          box-shadow: 0 10px 40px rgba(59, 130, 246, 0.3);
         }
 
         .profile-pic:hover {
           transform: scale(1.05);
-          border-color: rgba(255, 255, 255, 0.5);
+          border-color: rgba(59, 130, 246, 0.6);
+          box-shadow: 0 15px 50px rgba(59, 130, 246, 0.5);
         }
 
         .profile-pic img {
@@ -363,31 +474,31 @@ export default function ProfilePage() {
           align-items: center;
           justify-content: center;
           height: 100%;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.5);
         }
 
         .pic-overlay {
           position: absolute;
-          bottom: -5px;
-          right: -5px;
+          bottom: 5px;
+          right: 5px;
         }
 
         .pic-upload {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px;
-          height: 40px;
-          background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           border-radius: 50%;
           cursor: pointer;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
         }
 
         .pic-upload:hover {
           transform: scale(1.1);
-          box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+          box-shadow: 0 8px 30px rgba(59, 130, 246, 0.7);
         }
 
         .pic-upload svg {
@@ -396,88 +507,108 @@ export default function ProfilePage() {
 
         .profile-name {
           color: white;
-          font-size: 24px;
-          font-weight: 600;
-          margin: 0 0 5px 0;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-size: 28px;
+          font-weight: 700;
+          margin: 0 0 8px 0;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .profile-subtitle {
-          color: rgba(255, 255, 255, 0.8);
+          color: rgba(255, 255, 255, 0.6);
           margin: 0;
-          font-size: 14px;
+          font-size: 15px;
+          font-weight: 500;
         }
 
         .section {
-          background: white;
+          background: rgba(15, 23, 42, 0.6);
+          backdropFilter: blur(20px);
           margin: 0;
-          padding: 30px;
-          border-top: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 40px 32px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .section:last-child {
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 0;
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 28px;
+          padding-bottom: 16px;
+          border-bottom: 2px solid rgba(59, 130, 246, 0.2);
         }
 
         .section-title {
-          color: #2d3748;
-          font-size: 20px;
-          font-weight: 600;
-          margin: 0 0 25px 0;
-          padding-bottom: 10px;
-          border-bottom: 2px solid #e2e8f0;
+          font-size: 22px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
+          WebkitBackgroundClip: text;
+          WebkitTextFillColor: transparent;
+          backgroundClip: text;
+          margin: 0;
+        }
+
+        .section-icon {
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          borderRadius: 14px;
+          display: flex;
+          alignItems: center;
+          justifyContent: center;
+          color: white;
+          boxShadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         }
 
         .fields-grid {
           display: grid;
           gap: 20px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
 
         .field-card {
-          background: #f8fafc;
-          border: 2px solid #e2e8f0;
-          padding: 20px;
-          border-radius: 12px;
+          background: rgba(30, 41, 59, 0.5);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          padding: 24px;
+          border-radius: 16px;
           transition: all 0.3s ease;
           position: relative;
         }
 
         .field-card:hover {
-          border-color: #cbd5e0;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+          border-color: rgba(59, 130, 246, 0.3);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 30px rgba(59, 130, 246, 0.2);
         }
 
         .field-card.editing {
-          border-color: #4299e1;
-          background: #ebf8ff;
-          box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+          border-color: #3b82f6;
+          background: rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
         .field-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 14px;
         }
 
         .field-label {
-          font-weight: 600;
-          color: #2d3748;
-          font-size: 14px;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 13px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
         }
 
         .field-value {
-          font-size: 16px;
-          color: #4a5568;
+          font-size: 17px;
+          color: rgba(255, 255, 255, 0.8);
           font-weight: 500;
         }
 
         .field-value i {
-          color: #a0aec0;
+          color: rgba(255, 255, 255, 0.4);
           font-style: italic;
         }
 
@@ -488,136 +619,199 @@ export default function ProfilePage() {
 
         .input {
           width: 100%;
-          padding: 12px 16px;
-          border: 2px solid #e2e8f0;
-          border-radius: 8px;
+          padding: 14px 16px;
+          background: rgba(15, 23, 42, 0.6);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 12px;
           font-size: 16px;
           font-weight: 500;
-          color: #2d3748;
-          background: white;
-          transition: all 0.2s ease;
+          color: white;
+          transition: all 0.3s ease;
           box-sizing: border-box;
         }
 
         .input:focus {
           outline: none;
-          border-color: #4299e1;
-          box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+          background: rgba(15, 23, 42, 0.8);
+        }
+
+        .input::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        select.input {
+          cursor: pointer;
+        }
+
+        select.input option {
+          background: #1e293b;
+          color: white;
         }
 
         .btn {
           padding: 10px;
           border: none;
-          border-radius: 8px;
+          border-radius: 12px;
           cursor: pointer;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           display: flex;
           align-items: center;
           gap: 8px;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           text-decoration: none;
         }
 
         .btn:hover {
-          transform: translateY(-1px);
+          transform: translateY(-2px);
         }
 
         .btn.back {
-          background: rgba(255, 255, 255, 0.2);
-          color: white;
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          background: rgba(100, 116, 139, 0.3);
+          color: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 10px 20px;
         }
 
         .btn.back:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(100, 116, 139, 0.5);
+          box-shadow: 0 4px 15px rgba(100, 116, 139, 0.4);
         }
 
         .btn.edit {
-          background: #f7fafc;
-          color: #4a5568;
-          border: 1px solid #e2e8f0;
-          width: 40px;
-          height: 40px;
+          background: rgba(100, 116, 139, 0.3);
+          color: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          width: 42px;
+          height: 42px;
           justify-content: center;
           padding: 0;
         }
 
         .btn.edit:hover {
-          background: #edf2f7;
-          color: #2d3748;
-          border-color: #cbd5e0;
+          background: rgba(100, 116, 139, 0.5);
+          color: white;
+          border-color: rgba(255, 255, 255, 0.3);
         }
 
         .btn.save {
-          background: linear-gradient(45deg, #48bb78, #38a169);
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           justify-content: center;
           padding: 0;
-          box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+          box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
 
         .btn.save:hover {
-          box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
         }
 
         .btn.cancel {
-          background: linear-gradient(45deg, #f56565, #e53e3e);
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
           color: white;
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           justify-content: center;
           padding: 0;
-          box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
 
         .btn.cancel:hover {
-          box-shadow: 0 6px 16px rgba(245, 101, 101, 0.4);
+          box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
         }
 
         .loading {
-          text-align: center;
-          font-size: 18px;
-          color: white;
-          padding: 60px 20px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           min-height: 100vh;
+          background: #0a0a0a;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 18px;
+          gap: 20px;
+        }
+
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 4px solid rgba(59, 130, 246, 0.2);
+          border-top-color: #3b82f6;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #3b82f6 #1e293b;
+        }
+
+        *::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        *::-webkit-scrollbar-track {
+          background: #1e293b;
+        }
+
+        *::-webkit-scrollbar-thumb {
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          border-radius: 10px;
+        }
+
+        *::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
         }
 
         @media (max-width: 768px) {
-          .profile-container {
-            margin: 0;
-            border-radius: 0;
-          }
-
           .profile-header {
-            padding: 15px 20px;
+            padding: 16px 20px;
+            flex-wrap: wrap;
+            gap: 12px;
           }
 
           .profile-header h2 {
             font-size: 24px;
+            order: 2;
+            width: 100%;
+          }
+
+          .btn.back {
+            order: 1;
+          }
+
+          .profile-status {
+            order: 3;
           }
 
           .section {
-            padding: 20px;
+            padding: 30px 20px;
           }
 
           .profile-pic {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
           }
 
           .fields-grid {
-            gap: 15px;
+            grid-template-columns: 1fr;
+            gap: 16px;
           }
 
           .field-card {
-            padding: 16px;
+            padding: 20px;
+          }
+
+          .bg-circle {
+            filter: blur(60px);
           }
         }
         `}
