@@ -171,9 +171,22 @@ export default function SignupForm({ userType }) {
       transition: 'opacity 0.3s ease'
     }
   };
+  const placeholderFix = `
+  input::placeholder {
+    color: #555 !important;
+    opacity: 1 !important;
+  }
+  input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #555 !important;
+  }
+  input::-ms-input-placeholder { /* Microsoft Edge */
+    color: #555 !important;
+  }
+    `;
 
   return (
     <div style={styles.formWrapper}>
+      <style>{placeholderFix}</style>
       <div style={styles.header}>
         <h2 style={styles.title}>Create Account</h2>
         <p style={styles.subtitle}>

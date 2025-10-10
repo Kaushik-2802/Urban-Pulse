@@ -83,7 +83,7 @@ export default function LoginForm({ userType }) {
     input: {
       width: '100%',
       padding: '12px 14px',
-      border: '2px solid #ddd',
+      border: '2px solid #090909ff',
       borderRadius: '10px',
       fontSize: '15px',
       outline: 'none',
@@ -123,9 +123,22 @@ export default function LoginForm({ userType }) {
       margin: '0 auto'
     }
   };
+  const placeholderFix = `
+  input::placeholder {
+    color: #555 !important;
+    opacity: 1 !important;
+  }
+  input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #555 !important;
+  }
+  input::-ms-input-placeholder { /* Microsoft Edge */
+    color: #555 !important;
+  }
+`;
 
   return (
     <div style={styles.formWrapper}>
+      <style>{placeholderFix}</style>
       <div style={styles.icon}>
         {userType === 'public' ? '👤' : '🔧'}
       </div>
@@ -165,7 +178,7 @@ export default function LoginForm({ userType }) {
             placeholder="Enter your password"
             style={styles.input}
             onFocus={(e) => { e.target.style.borderColor = styles.inputFocus.borderColor; }}
-            onBlur={(e) => { e.target.style.borderColor = '#ddd'; }}
+            onBlur={(e) => { e.target.style.borderColor = '#888'; }}
             required
           />
           <span
