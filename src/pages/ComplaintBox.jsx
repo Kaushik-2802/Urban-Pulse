@@ -22,33 +22,37 @@ export default function ComplaintBox() {
 
   const styles = {
     container: {
-      backgroundColor: '#ffffff',
-      borderRadius: '16px',
+      background: 'rgba(30, 41, 59, 0.5)',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '20px',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #e2e8f0',
-      maxWidth: '600px',
-      margin: '32px auto',
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     },
     header: {
       textAlign: 'center',
       marginBottom: '32px'
     },
     title: {
-      fontSize: '28px',
-      fontWeight: '700',
-      color: '#2d3748',
+      fontSize: '26px',
+      fontWeight: '800',
+      background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
       margin: '0 0 8px 0',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '12px'
+      gap: '12px',
+      letterSpacing: '-0.5px'
     },
     subtitle: {
-      fontSize: '16px',
-      color: '#718096',
-      margin: '0'
+      fontSize: '15px',
+      color: 'rgba(255, 255, 255, 0.6)',
+      margin: '0',
+      fontWeight: '500'
     },
     form: {
       display: 'flex',
@@ -58,140 +62,161 @@ export default function ComplaintBox() {
     inputGroup: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '8px'
+      gap: '10px'
     },
     label: {
       fontSize: '14px',
-      fontWeight: '600',
-      color: '#2d3748',
+      fontWeight: '700',
+      color: 'rgba(255, 255, 255, 0.9)',
       display: 'flex',
       alignItems: 'center',
-      gap: '8px'
+      gap: '8px',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     },
     required: {
-      color: '#e53e3e'
+      color: '#fca5a5',
+      fontWeight: '700'
     },
     textarea: {
       width: '100%',
       minHeight: '120px',
       padding: '16px',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontSize: '16px',
+      background: 'rgba(15, 23, 42, 0.6)',
+      border: '2px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '14px',
+      fontSize: '15px',
       fontFamily: 'inherit',
       resize: 'vertical',
       transition: 'all 0.3s ease',
       outline: 'none',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      color: 'white',
+      fontWeight: '500'
     },
     textareaFocus: {
-      borderColor: '#e53e3e',
-      boxShadow: '0 0 0 3px rgba(229, 62, 62, 0.1)'
+      borderColor: '#ef4444',
+      boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.15)'
     },
     input: {
       width: '100%',
       padding: '14px 16px',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontSize: '16px',
+      background: 'rgba(15, 23, 42, 0.6)',
+      border: '2px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '14px',
+      fontSize: '15px',
       transition: 'all 0.3s ease',
       outline: 'none',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      color: 'white',
+      fontWeight: '500'
     },
     inputFocus: {
-      borderColor: '#e53e3e',
-      boxShadow: '0 0 0 3px rgba(229, 62, 62, 0.1)'
+      borderColor: '#ef4444',
+      boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.15)'
     },
     select: {
       width: '100%',
       padding: '14px 16px',
-      border: '2px solid #e2e8f0',
-      borderRadius: '12px',
-      fontSize: '16px',
-      backgroundColor: '#fff',
+      background: 'rgba(15, 23, 42, 0.6)',
+      border: '2px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '14px',
+      fontSize: '15px',
       transition: 'all 0.3s ease',
       outline: 'none',
       boxSizing: 'border-box',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      color: 'white',
+      fontWeight: '500'
     },
     selectFocus: {
-      borderColor: '#e53e3e',
-      boxShadow: '0 0 0 3px rgba(229, 62, 62, 0.1)'
+      borderColor: '#ef4444',
+      boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.15)'
     },
     priorityButtons: {
       display: 'flex',
-      gap: '8px',
-      marginTop: '8px'
+      gap: '12px',
+      marginTop: '4px'
     },
     priorityButton: {
       flex: 1,
-      padding: '10px 16px',
-      border: '2px solid #e2e8f0',
-      borderRadius: '8px',
+      padding: '12px 16px',
+      border: '2px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: '12px',
       fontSize: '14px',
-      fontWeight: '600',
+      fontWeight: '700',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      backgroundColor: '#fff'
+      background: 'rgba(30, 41, 59, 0.5)',
+      color: 'rgba(255, 255, 255, 0.7)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     },
     priorityButtonActive: {
-      backgroundColor: '#e53e3e',
-      borderColor: '#e53e3e',
+      backgroundColor: '#ef4444',
+      borderColor: '#ef4444',
       color: '#fff'
     },
     priorityButtonLow: {
-      backgroundColor: '#38a169',
-      borderColor: '#38a169',
-      color: '#fff'
+      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      borderColor: '#10b981',
+      color: '#fff',
+      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
     },
     priorityButtonMedium: {
-      backgroundColor: '#d69e2e',
-      borderColor: '#d69e2e',
-      color: '#fff'
+      background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+      borderColor: '#f59e0b',
+      color: '#fff',
+      boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)'
     },
     priorityButtonHigh: {
-      backgroundColor: '#e53e3e',
-      borderColor: '#e53e3e',
-      color: '#fff'
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      borderColor: '#ef4444',
+      color: '#fff',
+      boxShadow: '0 4px 15px rgba(239, 68, 68, 0.4)'
     },
     submitButton: {
       width: '100%',
       padding: '16px',
-      backgroundColor: '#e53e3e',
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
       color: 'white',
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: '14px',
       fontSize: '16px',
-      fontWeight: '600',
+      fontWeight: '700',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
       marginTop: '8px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px'
+      gap: '10px',
+      boxShadow: '0 6px 20px rgba(239, 68, 68, 0.4)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     },
     submitButtonHover: {
-      backgroundColor: '#c53030',
       transform: 'translateY(-2px)',
-      boxShadow: '0 8px 16px rgba(229, 62, 62, 0.3)'
+      boxShadow: '0 8px 30px rgba(239, 68, 68, 0.6)'
     },
     submitButtonDisabled: {
-      backgroundColor: '#a0aec0',
+      background: 'rgba(100, 116, 139, 0.5)',
       cursor: 'not-allowed',
-      transform: 'none'
+      transform: 'none',
+      boxShadow: 'none'
     },
     charCount: {
-      fontSize: '12px',
-      color: '#718096',
+      fontSize: '13px',
+      color: 'rgba(255, 255, 255, 0.5)',
       textAlign: 'right',
-      marginTop: '4px'
+      marginTop: '6px',
+      fontWeight: '600'
     },
     charCountWarning: {
-      color: '#d69e2e'
+      color: '#fbbf24'
     },
     charCountError: {
-      color: '#e53e3e'
+      color: '#fca5a5'
     }
   };
 
@@ -205,8 +230,8 @@ export default function ComplaintBox() {
   };
 
   const getCharCountStyle = (count) => {
-    if (count > 450) return styles.charCountError;
-    if (count > 400) return styles.charCountWarning;
+    if (count > 450) return { ...styles.charCount, ...styles.charCountError };
+    if (count > 400) return { ...styles.charCount, ...styles.charCountWarning };
     return styles.charCount;
   };
 
@@ -237,18 +262,18 @@ export default function ComplaintBox() {
               e.target.style.boxShadow = styles.selectFocus.boxShadow;
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = '#e2e8f0';
+              e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
               e.target.style.boxShadow = 'none';
             }}
             required
           >
-            <option value="">Select a category</option>
-            <option value="service-quality">Service Quality</option>
-            <option value="billing">Billing Issue</option>
-            <option value="worker-behavior">Worker Behavior</option>
-            <option value="delayed-service">Delayed Service</option>
-            <option value="damaged-property">Property Damage</option>
-            <option value="other">Other</option>
+            <option value="" style={{ background: '#1e293b', color: 'white' }}>Select a category</option>
+            <option value="service-quality" style={{ background: '#1e293b', color: 'white' }}>Service Quality</option>
+            <option value="billing" style={{ background: '#1e293b', color: 'white' }}>Billing Issue</option>
+            <option value="worker-behavior" style={{ background: '#1e293b', color: 'white' }}>Worker Behavior</option>
+            <option value="delayed-service" style={{ background: '#1e293b', color: 'white' }}>Delayed Service</option>
+            <option value="damaged-property" style={{ background: '#1e293b', color: 'white' }}>Property Damage</option>
+            <option value="other" style={{ background: '#1e293b', color: 'white' }}>Other</option>
           </select>
         </div>
 
@@ -267,7 +292,7 @@ export default function ComplaintBox() {
               e.target.style.boxShadow = styles.textareaFocus.boxShadow;
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = '#e2e8f0';
+              e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
               e.target.style.boxShadow = 'none';
             }}
             maxLength={500}
@@ -294,7 +319,7 @@ export default function ComplaintBox() {
               e.target.style.boxShadow = styles.inputFocus.boxShadow;
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = '#e2e8f0';
+              e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
               e.target.style.boxShadow = 'none';
             }}
             required
@@ -318,14 +343,16 @@ export default function ComplaintBox() {
                 onClick={() => setPriority(level)}
                 onMouseEnter={(e) => {
                   if (priority !== level) {
-                    e.target.style.backgroundColor = '#f7fafc';
-                    e.target.style.borderColor = '#cbd5e0';
+                    e.target.style.background = 'rgba(30, 41, 59, 0.8)';
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    e.target.style.transform = 'translateY(-2px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (priority !== level) {
-                    e.target.style.backgroundColor = '#fff';
-                    e.target.style.borderColor = '#e2e8f0';
+                    e.target.style.background = 'rgba(30, 41, 59, 0.5)';
+                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.target.style.transform = 'translateY(0)';
                   }
                 }}
               >
@@ -345,16 +372,14 @@ export default function ComplaintBox() {
           disabled={isSubmitting}
           onMouseEnter={(e) => {
             if (!isSubmitting) {
-              e.target.style.backgroundColor = styles.submitButtonHover.backgroundColor;
               e.target.style.transform = styles.submitButtonHover.transform;
               e.target.style.boxShadow = styles.submitButtonHover.boxShadow;
             }
           }}
           onMouseLeave={(e) => {
             if (!isSubmitting) {
-              e.target.style.backgroundColor = styles.submitButton.backgroundColor;
               e.target.style.transform = 'none';
-              e.target.style.boxShadow = 'none';
+              e.target.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
             }
           }}
         >
@@ -371,6 +396,21 @@ export default function ComplaintBox() {
           )}
         </button>
       </div>
+
+      <style>
+        {`
+          input::placeholder,
+          textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+          }
+
+          select option {
+            background: #1e293b;
+            color: white;
+            padding: 8px;
+          }
+        `}
+      </style>
     </div>
   );
 }

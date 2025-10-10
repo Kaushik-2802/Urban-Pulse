@@ -1,46 +1,49 @@
 export default function Payments({ payments }) {
   const styles = {
     container: {
-      padding: '24px',
-      maxWidth: '800px',
-      margin: '0 auto',
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     },
     header: {
       display: 'flex',
       alignItems: 'center',
       marginBottom: '24px',
       paddingBottom: '16px',
-      borderBottom: '2px solid #e2e8f0'
+      borderBottom: '2px solid rgba(59, 130, 246, 0.2)'
     },
     title: {
-      fontSize: '28px',
+      fontSize: '24px',
       fontWeight: '700',
-      color: '#2d3748',
+      background: 'linear-gradient(135deg, #ffffff 0%, #60a5fa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
       margin: '0',
       display: 'flex',
       alignItems: 'center',
-      gap: '12px'
+      gap: '12px',
+      letterSpacing: '-0.5px'
     },
     icon: {
-      fontSize: '32px'
+      fontSize: '28px'
     },
     emptyState: {
       textAlign: 'center',
-      padding: '60px 20px',
-      backgroundColor: '#f8fafc',
+      padding: '50px 20px',
+      background: 'rgba(30, 41, 59, 0.5)',
+      backdropFilter: 'blur(10px)',
       borderRadius: '16px',
-      border: '2px dashed #cbd5e0'
+      border: '2px dashed rgba(59, 130, 246, 0.3)'
     },
     emptyIcon: {
       fontSize: '64px',
-      marginBottom: '16px'
+      marginBottom: '16px',
+      filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))'
     },
     emptyText: {
       fontSize: '18px',
-      color: '#4a5568',
+      color: 'rgba(255, 255, 255, 0.7)',
       margin: '0',
-      fontWeight: '500'
+      fontWeight: '600'
     },
     paymentsList: {
       display: 'flex',
@@ -48,105 +51,140 @@ export default function Payments({ payments }) {
       gap: '16px'
     },
     paymentCard: {
-      backgroundColor: '#ffffff',
-      border: '1px solid #e2e8f0',
-      borderRadius: '12px',
-      padding: '20px',
+      background: 'rgba(30, 41, 59, 0.5)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '16px',
+      padding: '24px',
       transition: 'all 0.3s ease',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
       position: 'relative',
       overflow: 'hidden'
     },
     paymentCardHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
-      borderColor: '#007bff'
+      transform: 'translateY(-4px)',
+      boxShadow: '0 12px 30px rgba(59, 130, 246, 0.3)',
+      borderColor: 'rgba(59, 130, 246, 0.5)'
     },
     paymentHeader: {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: '12px'
+      marginBottom: '16px'
     },
     serviceName: {
-      fontSize: '18px',
-      fontWeight: '600',
-      color: '#2d3748',
+      fontSize: '20px',
+      fontWeight: '700',
+      color: 'white',
       margin: '0',
       flex: 1
     },
     amount: {
-      fontSize: '24px',
-      fontWeight: '700',
-      color: '#e53e3e',
-      margin: '0'
+      fontSize: '28px',
+      fontWeight: '800',
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      margin: '0',
+      letterSpacing: '-1px'
     },
     dueDate: {
       fontSize: '14px',
-      color: '#718096',
+      color: 'rgba(255, 255, 255, 0.6)',
       margin: '0',
       display: 'flex',
       alignItems: 'center',
-      gap: '6px'
+      gap: '6px',
+      fontWeight: '500'
     },
     urgentBadge: {
       position: 'absolute',
-      top: '12px',
-      right: '12px',
-      backgroundColor: '#fed7d7',
-      color: '#c53030',
-      padding: '4px 8px',
-      borderRadius: '12px',
-      fontSize: '12px',
-      fontWeight: '600'
+      top: '16px',
+      right: '16px',
+      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+      color: 'white',
+      padding: '6px 14px',
+      borderRadius: '20px',
+      fontSize: '11px',
+      fontWeight: '800',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      boxShadow: '0 4px 15px rgba(239, 68, 68, 0.5)',
+      animation: 'pulse 2s infinite'
     },
     payButton: {
-      marginTop: '16px',
-      padding: '10px 20px',
-      backgroundColor: '#007bff',
+      marginTop: '20px',
+      padding: '12px 24px',
+      background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
       color: 'white',
       border: 'none',
-      borderRadius: '8px',
-      fontSize: '14px',
-      fontWeight: '600',
+      borderRadius: '12px',
+      fontSize: '15px',
+      fontWeight: '700',
       cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
-      width: '100%'
+      transition: 'all 0.3s ease',
+      width: '100%',
+      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     },
     payButtonHover: {
-      backgroundColor: '#0056b3'
+      transform: 'translateY(-2px)',
+      boxShadow: '0 6px 25px rgba(59, 130, 246, 0.6)'
     },
     summary: {
-      backgroundColor: '#f7fafc',
-      padding: '20px',
-      borderRadius: '12px',
+      background: 'rgba(30, 41, 59, 0.5)',
+      backdropFilter: 'blur(10px)',
+      padding: '24px',
+      borderRadius: '16px',
       marginBottom: '24px',
-      border: '1px solid #e2e8f0'
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
     },
     summaryTitle: {
-      fontSize: '16px',
-      fontWeight: '600',
-      color: '#2d3748',
-      margin: '0 0 12px 0'
+      fontSize: '18px',
+      fontWeight: '700',
+      color: 'white',
+      margin: '0 0 20px 0',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     },
     summaryStats: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      gap: '16px'
     },
     statItem: {
-      textAlign: 'center'
+      textAlign: 'center',
+      padding: '16px',
+      background: 'rgba(15, 23, 42, 0.5)',
+      borderRadius: '12px',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      transition: 'all 0.3s ease'
+    },
+    statItemHover: {
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 20px rgba(59, 130, 246, 0.2)',
+      borderColor: 'rgba(59, 130, 246, 0.3)'
     },
     statNumber: {
-      fontSize: '24px',
-      fontWeight: '700',
-      color: '#007bff',
-      margin: '0'
+      fontSize: '28px',
+      fontWeight: '800',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      margin: '0',
+      letterSpacing: '-1px'
     },
     statLabel: {
-      fontSize: '14px',
-      color: '#718096',
-      margin: '4px 0 0 0'
+      fontSize: '13px',
+      color: 'rgba(255, 255, 255, 0.6)',
+      margin: '8px 0 0 0',
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
     }
   };
 
@@ -161,13 +199,6 @@ export default function Payments({ payments }) {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <h2 style={styles.title}>
-          <span style={styles.icon}>💳</span>
-          Pending Payments
-        </h2>
-      </div>
-
       {payments.length === 0 ? (
         <div style={styles.emptyState}>
           <div style={styles.emptyIcon}>🎉</div>
@@ -178,16 +209,60 @@ export default function Payments({ payments }) {
           <div style={styles.summary}>
             <h3 style={styles.summaryTitle}>Payment Summary</h3>
             <div style={styles.summaryStats}>
-              <div style={styles.statItem}>
+              <div 
+                style={styles.statItem}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = styles.statItemHover.transform;
+                  e.currentTarget.style.boxShadow = styles.statItemHover.boxShadow;
+                  e.currentTarget.style.borderColor = styles.statItemHover.borderColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
                 <p style={styles.statNumber}>{payments.length}</p>
                 <p style={styles.statLabel}>Total Bills</p>
               </div>
-              <div style={styles.statItem}>
+              <div 
+                style={styles.statItem}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = styles.statItemHover.transform;
+                  e.currentTarget.style.boxShadow = styles.statItemHover.boxShadow;
+                  e.currentTarget.style.borderColor = styles.statItemHover.borderColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
                 <p style={styles.statNumber}>₹{totalAmount.toLocaleString()}</p>
                 <p style={styles.statLabel}>Total Amount</p>
               </div>
-              <div style={styles.statItem}>
-                <p style={{...styles.statNumber, color: overdueCount > 0 ? '#e53e3e' : '#38a169'}}>
+              <div 
+                style={styles.statItem}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = styles.statItemHover.transform;
+                  e.currentTarget.style.boxShadow = styles.statItemHover.boxShadow;
+                  e.currentTarget.style.borderColor = styles.statItemHover.borderColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                <p style={{
+                  ...styles.statNumber,
+                  background: overdueCount > 0 
+                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>
                   {overdueCount}
                 </p>
                 <p style={styles.statLabel}>Overdue</p>
@@ -208,11 +283,11 @@ export default function Payments({ payments }) {
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'none';
                   e.currentTarget.style.boxShadow = styles.paymentCard.boxShadow;
-                  e.currentTarget.style.borderColor = styles.paymentCard.borderColor;
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
                 }}
               >
                 {isOverdue(payment.dueDate) && (
-                  <div style={styles.urgentBadge}>OVERDUE</div>
+                  <div style={styles.urgentBadge}>⚠️ OVERDUE</div>
                 )}
                 
                 <div style={styles.paymentHeader}>
@@ -231,22 +306,45 @@ export default function Payments({ payments }) {
                 <button 
                   style={styles.payButton}
                   onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = styles.payButtonHover.backgroundColor;
+                    e.target.style.transform = styles.payButtonHover.transform;
+                    e.target.style.boxShadow = styles.payButtonHover.boxShadow;
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = styles.payButton.backgroundColor;
+                    e.target.style.transform = 'none';
+                    e.target.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
                   }}
                   onClick={() => {
                     alert(`Initiating payment for ${payment.service} - ₹${payment.amount}`);
                   }}
                 >
-                  Pay Now
+                  💳 Pay Now
                 </button>
               </div>
             ))}
           </div>
         </>
       )}
+
+      <style>
+        {`
+          @keyframes pulse {
+            0%, 100% {
+              opacity: 1;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.9;
+              transform: scale(1.02);
+            }
+          }
+
+          @media (max-width: 768px) {
+            .summaryStats {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
