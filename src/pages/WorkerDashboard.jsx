@@ -11,26 +11,40 @@ export default function WorkerDashboard() {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
+  useEffect(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.documentElement.style.margin = '0';
+    document.documentElement.style.padding = '0';
+    
+    return () => {
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.documentElement.style.margin = '';
+      document.documentElement.style.padding = '';
+    };
+  }, []);
 
   useEffect(() => {
-  if (!showProfile) {
-    fetchWorkerDetails();
-    fetchPayments();
-  }
-}, [userId, showProfile]);
+    if (!showProfile) {
+      fetchWorkerDetails();
+      fetchPayments();
+    }
+  }, [userId, showProfile]);
 
-useEffect(() => {
-  if (worker && worker.userId) {
-    fetchBookings(worker.userId);
-  }
-}, [worker]);
+  useEffect(() => {
+    if (worker && worker.userId) {
+      fetchBookings(worker.userId);
+    }
+  }, [worker]);
+
   const fetchWorkerDetails = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/worker/profile/${userId}`);
       const data = await res.json();
-      if (res.ok){ 
+      if (res.ok) {
         setWorker(data);
-        localStorage.setItem('workerId',data.userId)     
+        localStorage.setItem('workerId', data.userId);
       }
     } catch (err) {
       console.error('Failed to fetch worker profile:', err);
@@ -38,20 +52,20 @@ useEffect(() => {
   };
 
   const fetchBookings = async (workerId) => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/bookings/worker/${workerId}`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`http://localhost:5000/api/bookings/worker/${workerId}`);
+      const data = await response.json();
 
-    if (response.ok) {
-      console.log("Fetched bookings:", data);
-      setBookings(data);
-    } else {
-      console.error('Error fetching bookings:', data.message || data);
+      if (response.ok) {
+        console.log("Fetched bookings:", data);
+        setBookings(data);
+      } else {
+        console.error('Error fetching bookings:', data.message || data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch bookings:', err);
     }
-  } catch (err) {
-    console.error('Failed to fetch bookings:', err);
-  }
-};
+  };
 
   const fetchPayments = async () => {
     try {
@@ -64,40 +78,35 @@ useEffect(() => {
   };
 
   const openGoogleMaps = (destination) => {
-  if (!destination) {
-    alert('Customer address not available for navigation.');
-    return;
-  }
+    if (!destination) {
+      alert('Customer address not available for navigation.');
+      return;
+    }
 
-  // Worker (origin) address
-  const originAddress = worker?.address
-    ? `${worker.address.addressLine1 || ''}, ${worker.address.city || ''}, ${worker.address.country || ''}`
+    const originAddress = worker?.address
+      ? `${worker.address.addressLine1 || ''}, ${worker.address.city || ''}, ${worker.address.country || ''}`
         .replace(/\s+/g, ' ')
         .trim()
-    : '';
+      : '';
 
-  if (!originAddress) {
-    alert('Worker address is missing. Please update your profile.');
-    return;
-  }
+    if (!originAddress) {
+      alert('Worker address is missing. Please update your profile.');
+      return;
+    }
 
-  // Customer (destination) address
-  const destinationAddress = `${destination.addressLine1 || ''}, ${destination.city || ''}, ${destination.country || ''}`
-    .replace(/\s+/g, ' ')
-    .trim();
+    const destinationAddress = `${destination.addressLine1 || ''}, ${destination.city || ''}, ${destination.country || ''}`
+      .replace(/\s+/g, ' ')
+      .trim();
 
-  if (!destinationAddress) {
-    alert('Customer address is incomplete.');
-    return;
-  }
+    if (!destinationAddress) {
+      alert('Customer address is incomplete.');
+      return;
+    }
 
-  // Google Maps URL with both origin & destination
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(destinationAddress)}`;
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(originAddress)}&destination=${encodeURIComponent(destinationAddress)}`;
 
-  window.open(mapsUrl, '_blank');
-};
-
-
+    window.open(mapsUrl, '_blank');
+  };
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
@@ -109,88 +118,112 @@ useEffect(() => {
 
   if (showProfile) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f3f4f6', padding: '24px' }}>
+      <div style={{ minHeight: '100vh', background: '#0a0a0f', padding: '24px' }}>
         <WorkerProfileForm userId={userId} onBack={() => setShowProfile(false)} />
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f3f4f6', padding: '24px' }}>
+    <div style={containerStyle}>
       {/* Header */}
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        background: '#4f46e5', 
-        color: '#fff', 
-        padding: '20px', 
-        borderRadius: '12px' 
-      }}>
-        <div>
-          <h1 style={{ margin: 0 }}>Worker Dashboard</h1>
-          <p style={{ margin: 0 }}>{worker?.name || 'Loading...'} - {worker?.profession || ''}</p>
+      <header style={headerStyle}>
+        <div style={headerLeftStyle}>
+          <div style={avatarStyle}>
+            {worker?.name?.charAt(0) || 'W'}
+          </div>
+          <div>
+            <h1 style={headerTitleStyle}>Worker Dashboard</h1>
+            <p style={headerSubtitleStyle}>
+              {worker?.name || 'Loading...'} 
+              {worker?.profession && <span style={professionBadgeStyle}>{worker.profession}</span>}
+            </p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => setShowProfile(true)} style={buttonStyle}>Profile</button>
-          <button onClick={handleLogout} style={buttonStyle}>Logout</button>
+          <button onClick={() => setShowProfile(true)} style={profileButtonStyle}>
+            <span style={{ marginRight: '8px' }}>👤</span>
+            Profile
+          </button>
+          <button onClick={handleLogout} style={logoutButtonStyle}>
+            <span style={{ marginRight: '8px' }}>🚪</span>
+            Logout
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginTop: '24px' }}>
-        {/* Improved Bookings Section */}
+      <div style={mainGridStyle}>
+        {/* Bookings Section */}
         <div style={bookingsSectionStyle}>
           <div style={bookingsHeaderStyle}>
-            <h2 style={bookingsTitleStyle}>Current Bookings</h2>
-            <span style={bookingsCountStyle}>{bookings.length} active</span>
+            <div>
+              <h2 style={bookingsTitleStyle}>Active Bookings</h2>
+              <p style={bookingsSubtitleStyle}>Manage your current service appointments</p>
+            </div>
+            <div style={bookingsCountBadgeStyle}>
+              {bookings.length}
+            </div>
           </div>
-          
+
           {bookings.length > 0 ? (
             <div style={bookingsContainerStyle}>
               {bookings.map((booking, idx) => (
                 <div key={idx} style={bookingCardStyle}>
+                  <div style={cardGlowStyle}></div>
+                  
                   <div style={bookingHeaderRowStyle}>
                     <h3 style={serviceNameStyle}>{booking.service}</h3>
-                    <span style={statusBadgeStyle}>Active</span>
+                    <span style={statusBadgeStyle}>
+                      <span style={{ marginRight: '6px' }}>●</span>
+                      Active
+                    </span>
                   </div>
-                  
+
                   <div style={bookingDetailsStyle}>
                     <div style={detailItemStyle}>
-                      <span style={iconStyle}>📅</span>
+                      <div style={iconContainerStyle}>📅</div>
                       <div style={detailTextStyle}>
                         <span style={labelStyle}>Date</span>
                         <span style={valueStyle}>{booking.date}</span>
                       </div>
                     </div>
-                    
+
                     <div style={detailItemStyle}>
-                      <span style={iconStyle}>⏰</span>
+                      <div style={iconContainerStyle}>⏰</div>
                       <div style={detailTextStyle}>
                         <span style={labelStyle}>Time</span>
                         <span style={valueStyle}>{booking.time}</span>
                       </div>
                     </div>
-                  </div>
-                  <div style={detailItemStyle}>
-                      <span style={iconStyle}>📍</span>
+
+                    <div style={{ ...detailItemStyle, gridColumn: '1 / -1' }}>
+                      <div style={iconContainerStyle}>📍</div>
                       <div style={detailTextStyle}>
                         <span style={labelStyle}>Location</span>
                         <span style={valueStyle}>
-                          {booking.customerAddress 
+                          {booking.customerAddress
                             ? `${booking.customerAddress.addressLine1 || ''}, ${booking.customerAddress.city || ''}, ${booking.customerAddress.country || ''}`
                             : 'Not provided'}
                         </span>
                       </div>
+                    </div>
                   </div>
-                  
+
                   <div style={bookingActionsStyle}>
-                    <button style={actionButtonStyle}>View Details</button>
-                    <button style={primaryActionButtonStyle}>Mark Complete</button>
-                    <button 
-                      style={secondaryActionButtonStyle} 
+                    <button style={secondaryButtonStyle}>
+                      <span style={{ marginRight: '6px' }}>👁️</span>
+                      View Details
+                    </button>
+                    <button style={primaryButtonStyle}>
+                      <span style={{ marginRight: '6px' }}>✓</span>
+                      Mark Complete
+                    </button>
+                    <button
+                      style={navigationButtonStyle}
                       onClick={() => openGoogleMaps(booking.customerAddress)}
                     >
+                      <span style={{ marginRight: '6px' }}>🗺️</span>
                       Get Directions
                     </button>
                   </div>
@@ -200,34 +233,51 @@ useEffect(() => {
           ) : (
             <div style={emptyStateStyle}>
               <div style={emptyIconStyle}>📋</div>
-              <h3 style={emptyTitleStyle}>No Current Bookings</h3>
-              <p style={emptyDescriptionStyle}>You don't have any active bookings at the moment. New bookings will appear here.</p>
+              <h3 style={emptyTitleStyle}>No Active Bookings</h3>
+              <p style={emptyDescriptionStyle}>
+                You don't have any active bookings at the moment. New bookings will appear here.
+              </p>
             </div>
           )}
         </div>
 
-        {/* Payments & Complaints */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Sidebar */}
+        <div style={sidebarStyle}>
           {/* Payments */}
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px' }}>
-            <h2>Past Payments</h2>
+          <div style={sidebarCardStyle}>
+            <div style={sidebarHeaderStyle}>
+              <h2 style={sidebarTitleStyle}>
+                <span style={{ marginRight: '10px' }}>💰</span>
+                Payment History
+              </h2>
+            </div>
             {payments.length > 0 ? (
-              <ul>
+              <div style={paymentsListStyle}>
                 {payments.map((payment, idx) => (
-                  <li key={idx}>
-                    ₹{payment.amount} - {payment.service}
-                  </li>
+                  <div key={idx} style={paymentItemStyle}>
+                    <div style={paymentIconStyle}>₹</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={paymentAmountStyle}>₹{payment.amount}</div>
+                      <div style={paymentServiceStyle}>{payment.service}</div>
+                    </div>
+                    <div style={paymentDotStyle}></div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
-              <p>No past payments.</p>
+              <p style={noDataTextStyle}>No payment history available</p>
             )}
           </div>
 
           {/* Complaints */}
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px' }}>
-            <h2>Complaint Box</h2>
-            <div style={{ padding: '20px', textAlign: 'center', color: '#6b7280' }}>
+          <div style={sidebarCardStyle}>
+            <div style={sidebarHeaderStyle}>
+              <h2 style={sidebarTitleStyle}>
+                <span style={{ marginRight: '10px' }}>📨</span>
+                Complaint Box
+              </h2>
+            </div>
+            <div style={complaintPlaceholderStyle}>
               ComplaintBox component placeholder
             </div>
           </div>
@@ -237,210 +287,438 @@ useEffect(() => {
   );
 }
 
-const buttonStyle = {
-  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  color: 'white',
-  border: '1px solid rgba(255,255,255,0.4)',
-  padding: '8px 16px',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  backdropFilter: 'blur(8px)'
+// Styles
+const containerStyle = {
+  minHeight: '100vh',
+  background: 'linear-gradient(to bottom, #0a0a0f 0%, #1a1a2e 100%)',
+  padding: '24px',
+  margin: '0',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
 };
 
-const secondaryActionButtonStyle = {
-  background: '#f9fafb',
-  border: '2px solid #3b82f6',
-  color: '#3b82f6',
-  padding: '10px 20px',
-  borderRadius: '8px',
-  fontSize: '14px',
+const headerStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  background: 'linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%)',
+  color: '#fff',
+  padding: '24px 32px',
+  borderRadius: '16px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+  backdropFilter: 'blur(10px)'
+};
+
+const headerLeftStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0px'
+};
+
+const avatarStyle = {
+  width: '56px',
+  height: '56px',
+  borderRadius: '50%',
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '24px',
+  fontWeight: '700',
+  color: 'white',
+  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+};
+
+const headerTitleStyle = {
+  margin: '0 0 4px 0',
+  fontSize: '28px',
+  fontWeight: '700',
+  background: 'linear-gradient(135deg, #ffffff 0%, #a8b3ff 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text'
+};
+
+const headerSubtitleStyle = {
+  margin: 0,
+  fontSize: '15px',
+  color: '#a0a0b0',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px'
+};
+
+const professionBadgeStyle = {
+  background: 'rgba(102, 126, 234, 0.2)',
+  color: '#8b9cff',
+  padding: '4px 12px',
+  borderRadius: '12px',
+  fontSize: '13px',
+  fontWeight: '600',
+  border: '1px solid rgba(139, 156, 255, 0.3)'
+};
+
+const profileButtonStyle = {
+  background: 'rgba(255, 255, 255, 0.1)',
+  color: 'white',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  padding: '12px 24px',
+  borderRadius: '12px',
+  fontSize: '15px',
   fontWeight: '600',
   cursor: 'pointer',
-  transition: 'all 0.3s ease'
+  transition: 'all 0.3s ease',
+  backdropFilter: 'blur(10px)'
 };
 
+const logoutButtonStyle = {
+  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+  color: 'white',
+  border: 'none',
+  padding: '12px 24px',
+  borderRadius: '12px',
+  fontSize: '15px',
+  fontWeight: '600',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+};
+
+const mainGridStyle = {
+  display: 'grid',
+  gridTemplateColumns: '1fr 400px',
+  gap: '24px',
+  marginTop: '24px'
+};
 
 const bookingsSectionStyle = {
-  background: '#fff',
-  borderRadius: '12px',
+  background: 'linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%)',
+  borderRadius: '16px',
   overflow: 'hidden',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1)'
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
 };
 
 const bookingsHeaderStyle = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  padding: '24px 24px 16px 24px',
-  borderBottom: '2px solid #f3f4f6'
+  padding: '28px 32px',
+  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+  background: 'rgba(255, 255, 255, 0.02)'
 };
 
 const bookingsTitleStyle = {
-  margin: 0,
-  fontSize: '24px',
+  margin: '0 0 4px 0',
+  fontSize: '26px',
   fontWeight: '700',
-  color: '#111827'
+  color: '#ffffff'
 };
 
-const bookingsCountStyle = {
+const bookingsSubtitleStyle = {
+  margin: 0,
+  fontSize: '14px',
+  color: '#6b7280'
+};
+
+const bookingsCountBadgeStyle = {
   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   color: 'white',
-  padding: '6px 14px',
-  borderRadius: '20px',
-  fontSize: '14px',
-  fontWeight: '600',
-  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+  width: '48px',
+  height: '48px',
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '20px',
+  fontWeight: '700',
+  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
 };
 
 const bookingsContainerStyle = {
-  padding: '20px 24px 24px 24px',
+  padding: '24px 32px 32px 32px',
   display: 'flex',
   flexDirection: 'column',
   gap: '20px'
 };
 
 const bookingCardStyle = {
-  border: '2px solid #f3f4f6',
-  borderRadius: '12px',
-  padding: '24px',
-  background: '#fafbfc',
-  transition: 'all 0.3s ease',
-  cursor: 'pointer',
   position: 'relative',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '16px',
+  padding: '28px',
+  background: 'linear-gradient(135deg, #252535 0%, #2d2d42 100%)',
+  transition: 'all 0.3s ease',
   overflow: 'hidden'
+};
+
+const cardGlowStyle = {
+  position: 'absolute',
+  top: '-50%',
+  left: '-50%',
+  width: '200%',
+  height: '200%',
+  background: 'radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%)',
+  opacity: 0,
+  transition: 'opacity 0.3s ease',
+  pointerEvents: 'none'
 };
 
 const bookingHeaderRowStyle = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  marginBottom: '20px'
+  marginBottom: '24px'
 };
 
 const serviceNameStyle = {
   margin: 0,
-  fontSize: '20px',
+  fontSize: '22px',
   fontWeight: '700',
-  color: '#374151',
+  color: '#ffffff',
   lineHeight: '1.4',
-  maxWidth: '70%'
+  maxWidth: '65%'
 };
 
 const statusBadgeStyle = {
   background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
   color: 'white',
-  padding: '6px 12px',
-  borderRadius: '6px',
-  fontSize: '12px',
+  padding: '8px 16px',
+  borderRadius: '20px',
+  fontSize: '13px',
   fontWeight: '700',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
-  boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
+  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+  display: 'flex',
+  alignItems: 'center'
 };
 
 const bookingDetailsStyle = {
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   gap: '20px',
-  marginBottom: '24px',
-  background: '#ffffff',
-  padding: '16px',
-  borderRadius: '8px',
-  border: '1px solid #e5e7eb'
+  marginBottom: '28px',
+  background: 'rgba(0, 0, 0, 0.2)',
+  padding: '20px',
+  borderRadius: '12px',
+  border: '1px solid rgba(255, 255, 255, 0.05)'
 };
 
 const detailItemStyle = {
   display: 'flex',
-  alignItems: 'center',
-  gap: '12px'
+  alignItems: 'flex-start',
+  gap: '14px'
 };
 
-const iconStyle = {
-  fontSize: '24px',
-  width: '32px',
-  height: '32px',
+const iconContainerStyle = {
+  fontSize: '22px',
+  width: '40px',
+  height: '40px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  background: '#f3f4f6',
-  borderRadius: '8px'
+  background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%)',
+  borderRadius: '10px',
+  border: '1px solid rgba(139, 156, 255, 0.3)',
+  flexShrink: 0
 };
 
 const detailTextStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '4px'
+  gap: '4px',
+  flex: 1
 };
 
 const labelStyle = {
-  fontSize: '12px',
+  fontSize: '11px',
   color: '#6b7280',
-  fontWeight: '600',
+  fontWeight: '700',
   textTransform: 'uppercase',
-  letterSpacing: '0.8px'
+  letterSpacing: '1px'
 };
 
 const valueStyle = {
   fontSize: '16px',
-  color: '#111827',
-  fontWeight: '700'
+  color: '#e5e7eb',
+  fontWeight: '600',
+  lineHeight: '1.4'
 };
 
 const bookingActionsStyle = {
   display: 'flex',
   gap: '12px',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
+  flexWrap: 'wrap'
 };
 
-const actionButtonStyle = {
-  background: 'transparent',
-  border: '2px solid #d1d5db',
-  color: '#6b7280',
-  padding: '10px 20px',
-  borderRadius: '8px',
-  fontSize: '14px',
-  fontWeight: '600',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease'
-};
-
-const primaryActionButtonStyle = {
-  background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-  border: 'none',
-  color: 'white',
-  padding: '10px 20px',
-  borderRadius: '8px',
+const secondaryButtonStyle = {
+  background: 'rgba(255, 255, 255, 0.05)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  color: '#e5e7eb',
+  padding: '12px 20px',
+  borderRadius: '10px',
   fontSize: '14px',
   fontWeight: '600',
   cursor: 'pointer',
   transition: 'all 0.3s ease',
-  boxShadow: '0 4px 6px rgba(79, 70, 229, 0.3)'
+  display: 'flex',
+  alignItems: 'center'
+};
+
+const primaryButtonStyle = {
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  border: 'none',
+  color: 'white',
+  padding: '12px 20px',
+  borderRadius: '10px',
+  fontSize: '14px',
+  fontWeight: '600',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+  display: 'flex',
+  alignItems: 'center'
+};
+
+const navigationButtonStyle = {
+  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+  border: 'none',
+  color: 'white',
+  padding: '12px 20px',
+  borderRadius: '10px',
+  fontSize: '14px',
+  fontWeight: '600',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)',
+  display: 'flex',
+  alignItems: 'center'
 };
 
 const emptyStateStyle = {
-  padding: '80px 24px',
-  textAlign: 'center',
-  color: '#6b7280'
+  padding: '80px 32px',
+  textAlign: 'center'
 };
 
 const emptyIconStyle = {
-  fontSize: '64px',
-  marginBottom: '20px',
-  opacity: '0.5'
+  fontSize: '72px',
+  marginBottom: '24px',
+  opacity: '0.3',
+  filter: 'grayscale(100%)'
 };
 
 const emptyTitleStyle = {
   margin: '0 0 12px 0',
   fontSize: '24px',
   fontWeight: '700',
-  color: '#374151'
+  color: '#e5e7eb'
 };
 
 const emptyDescriptionStyle = {
   margin: 0,
   fontSize: '16px',
   lineHeight: '1.6',
+  color: '#6b7280',
   maxWidth: '400px',
   marginLeft: 'auto',
   marginRight: 'auto'
 };
+
+const sidebarStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '24px'
+};
+
+const sidebarCardStyle = {
+  background: 'linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%)',
+  borderRadius: '16px',
+  overflow: 'hidden',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+};
+
+const sidebarHeaderStyle = {
+  padding: '24px 24px 20px 24px',
+  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+  background: 'rgba(255, 255, 255, 0.02)'
+};
+
+const sidebarTitleStyle = {
+  margin: 0,
+  fontSize: '20px',
+  fontWeight: '700',
+  color: '#ffffff',
+  display: 'flex',
+  alignItems: 'center'
+};
+
+const paymentsListStyle = {
+  padding: '16px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+  maxHeight: '400px',
+  overflowY: 'auto'
+};
+
+const paymentItemStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '16px',
+  padding: '16px',
+  background: 'rgba(0, 0, 0, 0.2)',
+  borderRadius: '12px',
+  border: '1px solid rgba(255, 255, 255, 0.05)',
+  transition: 'all 0.3s ease'
+};
+
+const paymentIconStyle = {
+  width: '44px',
+  height: '44px',
+  borderRadius: '50%',
+  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '20px',
+  fontWeight: '700',
+  color: 'white',
+  flexShrink: 0
+};
+
+const paymentAmountStyle = {
+  fontSize: '18px',
+  fontWeight: '700',
+  color: '#10b981',
+  marginBottom: '2px'
+};
+
+const paymentServiceStyle = {
+  fontSize: '14px',
+  color: '#6b7280'
+};
+
+const paymentDotStyle = {
+  width: '8px',
+  height: '8px',
+  borderRadius: '50%',
+  background: '#10b981',
+  flexShrink: 0
+};
+
+const noDataTextStyle = {
+  padding: '40px 24px',
+  textAlign: 'center',
+  color: '#6b7280',
+  fontSize: '15px'
+};
+
+const complaintPlaceholderStyle = {
+  padding: '40px 24px',
+  textAlign: 'center',
+  color: '#6b7280',
+  fontSize: '15px'
+}
