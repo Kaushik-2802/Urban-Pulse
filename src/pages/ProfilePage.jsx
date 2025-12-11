@@ -1,192 +1,177 @@
 import { useState, useEffect } from 'react';
 
 export default function ProfilePage() {
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem("userId");
+
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    gender: '',
+    name: "",
+    phone: "",
+    gender: "",
     address: {
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      country: ''
+      addressLine1: "",
+      addressLine2: "",
+      city: "",
+      country: "",
     },
+    profilePic: "",
   });
 
   const [isLoading, setIsLoading] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
-  
   const [editingField, setEditingField] = useState(null);
-  const [tempValue, setTempValue] = useState('');
+  const [tempValue, setTempValue] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
 
+  // Fetch profile
   useEffect(() => {
     async function fetchProfile() {
       try {
         const res = await fetch(`http://localhost:5000/api/profile/${userId}`);
         if (res.ok) {
           const data = await res.json();
-          setFormData(data); 
+          setFormData(data);
           setProfileExists(true);
         } else if (res.status === 404) {
           setProfileExists(false);
         } else {
-          throw new Error('Unexpected error');
+          throw new Error("Unexpected error");
         }
       } catch (err) {
-        console.error('Failed to fetch profile:', err);
+        console.error("Failed to fetch profile:", err);
       } finally {
         setIsLoading(false);
       }
     }
 
-    if (userId) {
-      fetchProfile();
-    }
+    if (userId) fetchProfile();
   }, [userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
+  // Save whole profile (first-time profile creation)
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const payload = { ...formData, userId };
-      const method = profileExists ? 'PUT' : 'POST';
+      const method = profileExists ? "PUT" : "POST";
       const endpoint = profileExists
         ? `http://localhost:5000/api/profile/${userId}`
         : `http://localhost:5000/api/profile`;
 
       const res = await fetch(endpoint, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
-      alert(result.message || 'Saved successfully');
+      alert(result.message || "Saved successfully");
       setProfileExists(true);
     } catch (err) {
-      console.error('Failed to save profile:', err);
-      alert('Error saving profile');
+      console.error(err);
+      alert("Error saving profile");
     }
-  };
-
-  const handleBackToDashboard = () => {
-    window.history.back();
-  };
-
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      address: {
-        ...prev.address,
-        [name]: value
-      }
-    }));
   };
 
   const startEditing = (field) => {
     setEditingField(field);
-    setTempValue(formData[field]);
+
+    if (field.includes(".")) {
+      const [parent, child] = field.split(".");
+      setTempValue(formData[parent][child] || "");
+    } else {
+      setTempValue(formData[field] || "");
+    }
   };
 
   const cancelEditing = () => {
     setEditingField(null);
-    setTempValue('');
+    setTempValue("");
   };
 
   const saveField = async () => {
-    try {
-      const updatedFormData = { ...formData, [editingField]: tempValue };
-      
-      if (profileExists) {
-        const payload = { ...updatedFormData, userId };
-        const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+    let updated = { ...formData };
 
-        const result = await res.json();
-        if (res.ok) {
-          setFormData(updatedFormData);
-          alert(result.message || 'Field updated successfully');
-        } else {
-          throw new Error(result.message || 'Failed to update');
-        }
-      } else {
-        setFormData(updatedFormData);
-      }
-      
-      setEditingField(null);
-      setTempValue('');
-    } catch (err) {
-      console.error('Failed to save field:', err);
-      alert('Error updating field');
+    if (editingField.includes(".")) {
+      const [parent, child] = editingField.split(".");
+      updated = {
+        ...formData,
+        [parent]: {
+          ...formData[parent],
+          [child]: tempValue,
+        },
+      };
+    } else {
+      updated = { ...formData, [editingField]: tempValue };
     }
+
+    try {
+      const payload = { ...updated, userId };
+
+      const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setFormData(updated);
+      } else {
+        alert("Failed to update");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    setEditingField(null);
+    setTempValue("");
   };
 
+  // Profile Picture
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-        setFormData((prev) => ({
-          ...prev,
-          profilePic: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+      setFormData((prev) => ({ ...prev, profilePic: reader.result }));
+    };
+    reader.readAsDataURL(file);
   };
 
+  // FIXED renderField (was broken before)
   const renderField = (field, label, type = "text") => {
     const isEditing = editingField === field;
-    let value;
-    
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      value = formData[parent] ? formData[parent][child] : '';
+
+    let value = "";
+    if (field.includes(".")) {
+      const [parent, child] = field.split(".");
+      value = formData[parent]?.[child] || "";
     } else {
-      value = formData[field];
+      value = formData[field] || "";
     }
 
     return (
       <div className={`field-card ${isEditing ? "editing" : ""}`}>
         <div className="field-header">
           <div className="field-label">{label}</div>
+
           {isEditing ? (
             <div className="edit-actions">
-              <button onClick={saveField} className="btn save">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20,6 9,17 4,12"></polyline>
-                </svg>
-              </button>
-              <button onClick={cancelEditing} className="btn cancel">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
+              <button onClick={saveField} className="btn save">✔</button>
+              <button onClick={cancelEditing} className="btn cancel">✖</button>
             </div>
           ) : (
-            <button
-              onClick={() => startEditing(field)}
-              className="btn edit"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="m18.5 2.5 3 3L14 14l-4 1 1-4 7.5-7.5z"></path>
-              </svg>
+            <button onClick={() => startEditing(field)} className="btn edit">
+              ✎
             </button>
           )}
         </div>
@@ -219,6 +204,221 @@ export default function ProfilePage() {
     );
   };
 
+  // CREATE PROFILE FORM (fixed accidental return)
+  if (!profileExists && !isLoading) {
+  return (
+    <>
+      <div className="create-profile-container">
+        <h2>Create Your Profile</h2>
+
+        <form onSubmit={handleSubmit} className="create-profile-form">
+          <label>Name</label>
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter full name"
+          /><br />
+
+          <label>Phone</label>
+          <input
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="Enter phone number"
+          />
+
+          <label>Gender</label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+
+          <label>Address Line 1</label>
+          <input
+            value={formData.address.addressLine1}
+            onChange={(e) =>
+              setFormData((p) => ({
+                ...p,
+                address: { ...p.address, addressLine1: e.target.value },
+              }))
+            }
+          />
+
+          <label>Address Line 2</label>
+          <input
+            value={formData.address.addressLine2}
+            onChange={(e) =>
+              setFormData((p) => ({
+                ...p,
+                address: { ...p.address, addressLine2: e.target.value },
+              }))
+            }
+          />
+
+          <label>City</label>
+          <input
+            value={formData.address.city}
+            onChange={(e) =>
+              setFormData((p) => ({
+                ...p,
+                address: { ...p.address, city: e.target.value },
+              }))
+            }
+          />
+
+          <label>Country</label>
+          <input
+            value={formData.address.country}
+            onChange={(e) =>
+              setFormData((p) => ({
+                ...p,
+                address: { ...p.address, country: e.target.value },
+              }))
+            }
+          />
+
+          <button type="submit">Create Profile</button>
+        </form>
+      </div>
+
+      <style>{`
+        html, body {
+    margin: 0;
+    padding: 0;
+    background: #0a0a0a;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+        /* FIRST-TIME PROFILE CREATION PAGE */
+        .create-profile-container {
+          background: #0a0a0a;
+          min-height: 100vh;
+          padding: 60px 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          color: white;
+          font-family: "Inter", sans-serif;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Background glowing circles (same vibe as full profile) */
+        .create-profile-container::before,
+        .create-profile-container::after {
+          content: "";
+          position: absolute;
+          width: 450px;
+          height: 450px;
+          border-radius: 50%;
+          filter: blur(140px);
+          z-index: -1;
+        }
+
+        .create-profile-container::before {
+          background: rgba(59, 130, 246, 0.2);
+          top: -80px;
+          left: -120px;
+        }
+
+        .create-profile-container::after {
+          background: rgba(124, 58, 237, 0.18);
+          bottom: -100px;
+          right: -150px;
+        }
+
+        /* Heading */
+        .create-profile-container h2 {
+          font-size: 34px;
+          font-weight: 800;
+          margin-bottom: 30px;
+          text-align: center;
+          background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: -1px;
+        }
+
+        /* Form container */
+        .create-profile-form {
+          width: 100%;
+          max-width: 430px;
+          padding: 35px;
+          background: rgba(15, 23, 42, 0.75);
+          border-radius: 18px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 10px 40px rgba(59, 130, 246, 0.25);
+          backdrop-filter: blur(18px);
+        }
+
+        /* Labels */
+        .create-profile-form label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 600;
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.92);
+        }
+
+        /* Inputs & Selects */
+        .create-profile-form input,
+        .create-profile-form select {
+          width: 100%;
+          padding: 12px 15px;
+          margin-bottom: 18px;
+          font-size: 15px;
+          color: white;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          background: rgba(30, 41, 59, 0.55);
+          outline: none;
+          transition: all 0.25s ease;
+        }
+
+        /* Focus effect */
+        .create-profile-form input:focus,
+        .create-profile-form select:focus {
+          border-color: #3b82f6;
+          background: rgba(30, 41, 59, 0.85);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35);
+        }
+
+        /* Submit Button */
+        .create-profile-form button {
+          width: 100%;
+          padding: 14px;
+          margin-top: 10px;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 700;
+          color: white;
+          cursor: pointer;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          transition: all 0.3s ease;
+          box-shadow: 0 10px 32px rgba(59, 130, 246, 0.45);
+        }
+
+        .create-profile-form button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 14px 40px rgba(59, 130, 246, 0.55);
+        }
+      `}</style>
+    </>
+  );
+}
+
+
+  // MAIN PROFILE PAGE
   if (isLoading) {
     return (
       <div className="loading">
@@ -230,90 +430,56 @@ export default function ProfilePage() {
 
   return (
     <div className="profile-container">
-      {/* Animated Background */}
-      <div className="background-decoration">
-        <div className="bg-circle bg-circle-1"></div>
-        <div className="bg-circle bg-circle-2"></div>
-        <div className="bg-circle bg-circle-3"></div>
+      {/* HEADER */}
+      <div className="profile-header">
+        <button onClick={() => window.history.back()} className="btn back">
+          ← Dashboard
+        </button>
+        <h2>My Profile</h2>
+        <span className="status-badge">Active</span>
       </div>
 
-      <div className="profile-wrapper">
-        {/* Header */}
-        <div className="profile-header">
-          <button onClick={() => window.history.back()} className="btn back">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15,18 9,12 15,6"></polyline>
-            </svg>
-            Dashboard
-          </button>
-          <h2>My Profile</h2>
-          <div className="profile-status">
-            <span className="status-badge">Active</span>
+      {/* PROFILE PICTURE */}
+      <div className="profile-pic-section">
+        <div className="profile-pic">
+          {previewImage ? (
+            <img src={previewImage} alt="Profile" />
+          ) : formData.profilePic ? (
+            <img src={formData.profilePic} alt="Profile" />
+          ) : (
+            <div className="no-pic">No Image</div>
+          )}
+
+          <div className="pic-overlay">
+            <label className="pic-upload">
+              Upload
+              <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+            </label>
           </div>
         </div>
 
-        {/* Profile Picture Section */}
-        <div className="profile-pic-section">
-          <div className="profile-pic">
-            {previewImage ? (
-              <img src={previewImage} alt="Profile" />
-            ) : (
-              <div className="no-pic">
-                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
-            )}
-            <div className="pic-overlay">
-              <label className="pic-upload">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-                <input type="file" accept="image/*" onChange={handleImageChange} hidden />
-              </label>
-            </div>
-          </div>
-          <h3 className="profile-name">{formData.name || 'User Name'}</h3>
-          <p className="profile-subtitle">Member since 2024</p>
-        </div>
+        <h3 className="profile-name">{formData.name || "User Name"}</h3>
+        <p className="profile-subtitle">Member since 2024</p>
+      </div>
 
-        {/* Personal Information */}
-        <div className="section">
-          <div className="section-header">
-            <h4 className="section-title">Personal Information</h4>
-            <div className="section-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-            </div>
-          </div>
-          <div className="fields-grid">
-            {renderField("name", "Full Name")}
-            {renderField("phone", "Phone Number", "tel")}
-            {renderField("gender", "Gender")}
-          </div>
+      {/* PERSONAL INFO */}
+      <div className="section">
+        <h4 className="section-title">Personal Information</h4>
+        <div className="fields-grid">
+          {renderField("name", "Full Name")}
+          {renderField("phone", "Phone Number")}
+          {renderField("gender", "Gender")}
         </div>
+      </div>
 
-        {/* Address Information */}
-        <div className="section">
-          <div className="section-header">
-            <h4 className="section-title">Address Information</h4>
-            <div className="section-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-            </div>
-          </div>
-          <div className="fields-grid">
-            {renderField("address.addressLine1", "Address Line 1")}
-            {renderField("address.addressLine2", "Address Line 2")}
-            {renderField("address.city", "City")}
-            {renderField("address.country", "Country")}
-          </div>
+      {/* ADDRESS INFO */}
+      <div className="section">
+        <h4 className="section-title">Address Information</h4>
+        <div className="fields-grid">
+          {renderField("address.addressLine1", "Address Line 1")}
+          {renderField("address.addressLine2", "Address Line 2")}
+          {renderField("address.city", "City")}
+          {renderField("address.country", "Country")}
         </div>
       </div>
 
