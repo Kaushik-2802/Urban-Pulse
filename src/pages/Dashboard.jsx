@@ -873,7 +873,7 @@ return (
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
         transition: 'all 0.3s ease'
       }}
-      onClick={() => alert('Nearby Hospitals clicked!')}
+      onClick={()=> navigate('/nearby-hospitals')}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-5px)';
         e.currentTarget.style.borderColor = '#ef4444';
@@ -916,7 +916,7 @@ return (
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
         transition: 'all 0.3s ease'
       }}
-      onClick={() => alert('Traffic Situation clicked!')}
+      onClick={() => navigate('/nearby-traffic')}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-5px)';
         e.currentTarget.style.borderColor = '#f59e0b';
