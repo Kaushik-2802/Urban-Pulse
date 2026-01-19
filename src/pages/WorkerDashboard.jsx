@@ -2,12 +2,22 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ComplaintBox from './ComplaintBox';
 import WorkerProfileForm from './WorkerProfileForm';
+import CreateWorkerProfile from '../components/CreateWorkerProfile'
+import StartWorkModal from '../components/StartWorkModal';
+import CompleteWorkModal from '../components/CompleteWorkModal';
 
 export default function WorkerDashboard() {
   const [bookings, setBookings] = useState([]);
   const [payments, setPayments] = useState([]);
   const [worker, setWorker] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [forceProfile, setForceProfile] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [activeBooking, setActiveBooking] = useState(null);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
@@ -38,18 +48,54 @@ export default function WorkerDashboard() {
     }
   }, [worker]);
 
+  const isProfileComplete = (worker) => {
+  if (!worker) return false;
+
+  return (
+    worker.name &&
+    worker.phone &&
+    worker.gender &&
+    worker.profession &&
+    worker.address &&
+    worker.address.addressLine1 &&
+    worker.address.city &&
+    worker.address.country
+  );
+};
+
+
   const fetchWorkerDetails = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/worker/profile/${userId}`);
-      const data = await res.json();
-      if (res.ok) {
-        setWorker(data);
-        localStorage.setItem('workerId', data.userId);
-      }
-    } catch (err) {
-      console.error('Failed to fetch worker profile:', err);
+  try {
+    const res = await fetch(`http://localhost:5000/api/worker/profile/${userId}`);
+
+    if (res.status === 404) {
+      // 🚨 First time user → force profile
+      setForceProfile(true);
+      setWorker(null);
+      setLoadingProfile(false);
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setWorker(data);
+      localStorage.setItem('workerId', data.userId);
+
+      // 🔥 Profile exists but incomplete
+      if (!isProfileComplete(data)) {
+        setForceProfile(true);
+      } else {
+        setForceProfile(false);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to fetch worker profile:', err);
+  } finally {
+    setLoadingProfile(false);
+  }
+};
+
 
   const fetchBookings = async (workerId) => {
     try {
@@ -116,16 +162,70 @@ export default function WorkerDashboard() {
     }
   };
 
-  if (showProfile) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0f', padding: '24px' }}>
-        <WorkerProfileForm userId={userId} onBack={() => setShowProfile(false)} />
-      </div>
-    );
-  }
+ if (loadingProfile) {
+  return (
+    <div style={{ minHeight: '100vh', background: '#0a0a0f', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      Loading profile...
+    </div>
+  );
+}
+
+if (forceProfile) {
+  return (
+    <CreateWorkerProfile
+      userId={userId}
+      onSuccess={() => {
+        setForceProfile(false);
+        fetchWorkerDetails();
+      }}
+    />
+  );
+}
+
+if(showProfile){
+  return(
+    <WorkerProfileForm
+       userId={userId}
+       onBack={() => setShowProfile(false)}
+       onSuccess={() => {
+        setShowProfile(false);
+        fetchWorkerDetails();
+       }}
+    />
+  )
+}
+
+
+
+
 
   return (
     <div style={containerStyle}>
+
+      {showStartModal && (
+  <StartWorkModal
+    booking={activeBooking}
+    onClose={() => setShowStartModal(false)}
+    onStarted={() => {
+      setShowStartModal(false);
+      fetchBookings(worker.userId);
+    }}
+  />
+)}
+
+{showCompleteModal && (
+  <CompleteWorkModal
+    booking={activeBooking}
+    onClose={() => setShowCompleteModal(false)}
+    onCompleted={() => {
+      setShowCompleteModal(false);
+      fetchBookings(worker.userId);
+    }}
+  />
+)}
+
+
+
       {/* Header */}
       <header style={headerStyle}>
         <div style={headerLeftStyle}>
@@ -211,22 +311,37 @@ export default function WorkerDashboard() {
                   </div>
 
                   <div style={bookingActionsStyle}>
-                    <button style={secondaryButtonStyle}>
-                      <span style={{ marginRight: '6px' }}>👁️</span>
-                      View Details
+                  {booking.status === "ACTIVE" && (
+                    <button
+                      style={primaryButtonStyle}
+                      onClick={() => {
+                        setActiveBooking(booking);
+                        setShowStartModal(true);
+                      }}
+                    >
+                      ▶️ Start Work
                     </button>
-                    <button style={primaryButtonStyle}>
-                      <span style={{ marginRight: '6px' }}>✓</span>
-                      Mark Complete
-                    </button>
+                  )}
+
+                  {booking.status === "STARTED" && (
                     <button
                       style={navigationButtonStyle}
-                      onClick={() => openGoogleMaps(booking.customerAddress)}
+                      onClick={() => {
+                        setActiveBooking(booking);
+                        setShowCompleteModal(true);
+                      }}
                     >
-                      <span style={{ marginRight: '6px' }}>🗺️</span>
-                      Get Directions
+                      👉 Slide to Complete
                     </button>
-                  </div>
+                  )}
+
+                  {booking.status === "COMPLETED" && (
+                    <span style={{ color: "#10b981", fontWeight: "700" }}>
+                      ✅ Completed
+                    </span>
+                  )}
+                </div>
+
                 </div>
               ))}
             </div>

@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import {BrowserRouter,Routes,Route} from "react-router-dom"
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/ProfilePage'
@@ -9,6 +6,7 @@ import './App.css'
 import Home from "./pages/Home"
 import NearbyHospitals from './pages/NearbyHospitals'
 import NearbyTraffic from './pages/NearbyTraffic'
+import NearbySchools from './pages/NearbySchools'
 
 function App() {
   return(
@@ -21,6 +19,7 @@ function App() {
         <Route path='/worker/dashboard' element={<Worker />} />
         <Route path='/nearby-hospitals' element={<NearbyHospitals />} />
         <Route path='/nearby-traffic' element={<NearbyTraffic />} />
+        <Route path='/nearby-schools' element={<NearbySchools />} />
       </Routes>
     </BrowserRouter>
   )

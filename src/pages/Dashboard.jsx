@@ -830,7 +830,7 @@ return (
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
         transition: 'all 0.3s ease'
       }}
-      onClick={() => alert('Nearby Schools clicked!')}
+      onClick={() => navigate("/nearby-schools")}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-5px)';
         e.currentTarget.style.borderColor = '#10b981';
