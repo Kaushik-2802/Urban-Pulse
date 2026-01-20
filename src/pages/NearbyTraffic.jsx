@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import polyline from "@mapbox/polyline";
@@ -8,7 +8,6 @@ import "leaflet/dist/leaflet.css";
 import { getUserLocation } from "../utils/location";
 import { fetchTrafficRoute } from "../utils/traffic";
 
-/* Fix Leaflet icons */
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -20,8 +19,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-/* ---------- HELPERS ---------- */
-
+// Generate nearby cardinal points for default view
 function generateNearbyPoints(lat, lon) {
   const d = 0.02;
   return [
@@ -32,17 +30,25 @@ function generateNearbyPoints(lat, lon) {
   ];
 }
 
+// Determine traffic level from ETA
 function getTrafficLevel(duration, staticDuration) {
   const live = parseInt(duration.replace("s", ""));
   const normal = parseInt(staticDuration.replace("s", ""));
   const delay = live - normal;
-
   if (delay < 120) return { label: "Low", color: "green" };
   if (delay < 300) return { label: "Moderate", color: "orange" };
   return { label: "Heavy", color: "red" };
 }
 
-/* ---------- COMPONENT ---------- */
+// Debounce hook for destination input
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(handler);
+  }, [value]);
+  return debounced;
+}
 
 export default function NearbyTraffic() {
   const navigate = useNavigate();
@@ -50,53 +56,66 @@ export default function NearbyTraffic() {
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-     document.body.style.margin = '0';
-  const loadTraffic = async () => {
+  const [destination, setDestination] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [destRoute, setDestRoute] = useState(null);
+  const [destLoading, setDestLoading] = useState(false);
+
+  const [aiInsights, setAiInsights] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const debouncedDest = useDebounce(destination, 400);
+
+  // Fetch autocomplete suggestions using OpenStreetMap Nominatim
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (!debouncedDest) return setSuggestions([]);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+            debouncedDest
+          )}&format=json&addressdetails=1&limit=5`
+        );
+        const data = await res.json();
+        setSuggestions(data);
+      } catch (err) {
+        console.error("Failed to fetch suggestions", err);
+      }
+    };
+    fetchSuggestions();
+  }, [debouncedDest]);
+
+  // Load default nearby traffic
+  const loadNearbyTraffic = async () => {
     try {
       const location = await getUserLocation();
       setUserLocation(location);
 
-      const points = generateNearbyPoints(
-        location.lat,
-        location.lon
-      );
+      const points = generateNearbyPoints(location.lat, location.lon);
 
       const results = [];
-
       for (const p of points) {
         const route = await fetchTrafficRoute(
           { lat: location.lat, lng: location.lon },
           { lat: p.lat, lng: p.lon }
         );
-
-        if (route) {
-          results.push(route);
-        }
+        if (route) results.push(route);
       }
 
-  const enriched = results.map((r, index) => {
-  const live = Number(r.duration.replace("s", ""));
-  const normal = Number(r.staticDuration.replace("s", ""));
-  const delay = live - normal;
+      const enriched = results.map((r, index) => {
+        const live = Number(r.duration.replace("s", ""));
+        const normal = Number(r.staticDuration.replace("s", ""));
+        const traffic = getTrafficLevel(r.duration, r.staticDuration);
 
-  const traffic = getTrafficLevel(
-    r.duration,
-    r.staticDuration
-  );
-
-  return {
-    direction: points[index].label,
-    etaMin: Math.ceil(live / 60),
-    normalMin: Math.ceil(normal / 60),
-    delayMin: Math.max(0, Math.ceil(delay / 60)),
-    path: polyline.decode(
-      r.polyline.encodedPolyline
-    ),
-    traffic,
-  };
-});
-
+        return {
+          direction: points[index].label,
+          etaMin: Math.ceil(live / 60),
+          normalMin: Math.ceil(normal / 60),
+          delayMin: Math.max(0, Math.ceil(live / 60 - normal / 60)),
+          path: polyline.decode(r.polyline.encodedPolyline),
+          traffic,
+        };
+      });
 
       setRoutes(enriched);
     } catch (err) {
@@ -107,23 +126,135 @@ export default function NearbyTraffic() {
     }
   };
 
-  loadTraffic();
-}, []);
+  // Fetch traffic for selected destination
+  const handleSelectSuggestion = async (suggestion) => {
+    setDestination(suggestion.display_name);
+    setSuggestions([]);
+    setDestLoading(true);
 
+    try {
+      const lat = parseFloat(suggestion.lat);
+      const lon = parseFloat(suggestion.lon);
+
+      const route = await fetchTrafficRoute(
+        { lat: userLocation.lat, lng: userLocation.lon },
+        { lat, lng: lon }
+      );
+
+      if (route) {
+        const live = Number(route.duration.replace("s", ""));
+        const normal = Number(route.staticDuration.replace("s", ""));
+        const traffic = getTrafficLevel(route.duration, route.staticDuration);
+
+        const newRoute = {
+          direction: suggestion.display_name,
+          etaMin: Math.ceil(live / 60),
+          normalMin: Math.ceil(normal / 60),
+          delayMin: Math.max(0, Math.ceil(live / 60 - normal / 60)),
+          path: polyline.decode(route.polyline.encodedPolyline),
+          traffic,
+        };
+
+        setDestRoute(newRoute);
+
+        // Call AI for recommendations per route
+        generateAIInsights([newRoute]);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to fetch route for destination");
+    } finally {
+      setDestLoading(false);
+    }
+  };
+
+  // Generate AI insights
+  const generateAIInsights = async (routesToAnalyze) => {
+    setAiLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/ai/traffic-insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ routes: routesToAnalyze }),
+      });
+      const data = await res.json();
+      // Split insights by line to display in panel
+      setAiInsights(data.insights.split("\n").filter((line) => line));
+    } catch (err) {
+      console.error(err);
+      setAiInsights([
+        "AI insights temporarily unavailable. You can still view traffic and ETA.",
+      ]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    document.body.style.margin = "0";
+    loadNearbyTraffic();
+  }, []);
 
   if (loading) return <Page>Loading traffic data...</Page>;
 
- return (
-  <div>
+  return (
     <Page>
       <button onClick={() => navigate(-1)} style={backBtn}>
         ← Back
       </button>
 
-      <h1>Nearby Traffic Situation</h1>
+      <h1>Urban Pulse: AI Traffic Assistant</h1>
 
       {userLocation && (
         <>
+          {/* Destination Input */}
+          <div style={{ marginBottom: "20px", position: "relative" }}>
+            <input
+              type="text"
+              placeholder="Enter a destination"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              style={{
+                padding: "10px",
+                borderRadius: "8px",
+                width: "60%",
+                marginRight: "10px",
+                border: "none",
+                outline: "none",
+              }}
+            />
+            {suggestions.length > 0 && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  left: 0,
+                  width: "60%",
+                  background: "#1e293b",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  zIndex: 1000,
+                }}
+              >
+                {suggestions.map((s, i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleSelectSuggestion(s)}
+                    style={{
+                      padding: "10px",
+                      cursor: "pointer",
+                      borderBottom: "1px solid #334155",
+                    }}
+                  >
+                    {s.display_name}
+                  </div>
+                ))}
+              </div>
+            )}
+            {destLoading && <span style={{ marginLeft: "10px" }}>Loading...</span>}
+          </div>
+
+          {/* Map */}
           <MapContainer
             center={[userLocation.lat, userLocation.lon]}
             zoom={13}
@@ -138,64 +269,98 @@ export default function NearbyTraffic() {
               <Popup>Your Location</Popup>
             </Marker>
 
+            {/* Nearby traffic */}
             {routes.map((r, i) => (
               <Polyline
                 key={i}
                 positions={r.path}
-                pathOptions={{
-                  color: r.traffic.color,
-                  weight: 5,
-                }}
+                pathOptions={{ color: r.traffic.color, weight: 5 }}
               />
             ))}
+
+            {/* Destination AI route highlighted */}
+            {destRoute && (
+              <Polyline
+                positions={destRoute.path}
+                pathOptions={{
+                  color: "limegreen",
+                  weight: 6,
+                  dashArray: "5,10",
+                }}
+              />
+            )}
           </MapContainer>
 
-          <h2 style={{ marginTop: "25px" }}>Traffic by Direction</h2>
+          {/* Traffic Cards */}
+          <h2 style={{ marginTop: "25px" }}>Traffic Overview</h2>
 
           <div style={cardGrid}>
             {routes.map((r, i) => (
               <div key={i} style={trafficCard}>
                 <h3>{r.direction}</h3>
-
-                <div
-                  style={{
-                    color: r.traffic.color,
-                    fontWeight: "bold",
-                    marginBottom: "6px",
-                  }}
-                >
+                <div style={{ color: r.traffic.color, fontWeight: "bold", marginBottom: "6px" }}>
                   ● {r.traffic.label} Traffic
                 </div>
-
                 <div>ETA: {r.etaMin} min</div>
-                <div style={{ opacity: 0.7 }}>
-                  Normal: {r.normalMin} min
-                </div>
-
-                {r.delayMin > 0 && (
-                  <div style={{ color: "#facc15" }}>
-                    Delay: +{r.delayMin} min
-                  </div>
-                )}
+                <div style={{ opacity: 0.7 }}>Normal: {r.normalMin} min</div>
+                {r.delayMin > 0 && <div style={{ color: "#facc15" }}>Delay: +{r.delayMin} min</div>}
               </div>
             ))}
+
+            {destRoute && (
+              <div style={trafficCard}>
+                <h3>{destRoute.direction}</h3>
+                <div
+                  style={{ color: "limegreen", fontWeight: "bold", marginBottom: "6px" }}
+                >
+                  ● AI Recommended Route
+                </div>
+                <div>ETA: {destRoute.etaMin} min</div>
+                <div style={{ opacity: 0.7 }}>Normal: {destRoute.normalMin} min</div>
+                {destRoute.delayMin > 0 && <div style={{ color: "#facc15" }}>Delay: +{destRoute.delayMin} min</div>}
+              </div>
+            )}
+          </div>
+
+          {/* AI Insights Panel */}
+          {aiLoading ? (
+            <div style={{ marginTop: "20px" }}>Generating AI insights...</div>
+          ) : (
+            aiInsights.length > 0 && (
+              <div
+                style={{
+                  marginTop: "20px",
+                  background: "rgba(15,23,42,0.85)",
+                  padding: "18px",
+                  borderRadius: "14px",
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.6,
+                }}
+              >
+                <h3>AI Route Insights & Recommendations</h3>
+                <ul>
+                  {aiInsights.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          )}
+
+          {/* LEGEND */}
+          <div style={legend}>
+            <span style={{ color: "green" }}>● Low</span>
+            <span style={{ color: "orange" }}>● Moderate</span>
+            <span style={{ color: "red" }}>● Heavy</span>
+            <span style={{ color: "limegreen" }}>● AI Recommended</span>
           </div>
         </>
       )}
-
-      {/* LEGEND */}
-      <div style={legend}>
-        <span style={{ color: "green" }}>● Low</span>
-        <span style={{ color: "orange" }}>● Moderate</span>
-        <span style={{ color: "red" }}>● Heavy</span>
-      </div>
     </Page>
-  </div>
-);
+  );
 }
 
 /* ---------- STYLES ---------- */
-
 const Page = ({ children }) => (
   <div
     style={{
@@ -203,8 +368,6 @@ const Page = ({ children }) => (
       padding: "30px",
       background: "#020617",
       color: "white",
-      border:'none',
-      outline:'none'
     }}
   >
     {children}
@@ -229,7 +392,6 @@ const legend = {
 
 const cardGrid = {
   display: "grid",
-  border:'none',
   gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
   gap: "14px",
   marginTop: "15px",
@@ -241,4 +403,3 @@ const trafficCard = {
   padding: "16px",
   border: "1px solid rgba(255,255,255,0.08)",
 };
-
