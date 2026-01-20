@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet"
 import polyline from "@mapbox/polyline";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import attractionIconImg from "leaflet/dist/images/marker-icon.png";
+
 
 import { getUserLocation } from "../utils/location";
 import { fetchTrafficRoute } from "../utils/traffic";
@@ -18,6 +20,20 @@ L.Icon.Default.mergeOptions({
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
+
+const attractionIcon = new L.Icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+
+  iconSize: [18, 28],     // 👈 smaller than default
+  iconAnchor: [9, 28],
+  popupAnchor: [1, -24],
+  shadowSize: [28, 28],
+
+  className: "attraction-marker",
+});
+
 
 // Generate nearby cardinal points for default view
 function generateNearbyPoints(lat, lon) {
@@ -64,6 +80,10 @@ export default function NearbyTraffic() {
   const [aiInsights, setAiInsights] = useState([]);
   const [aiLoading, setAiLoading] = useState(false);
 
+  const [attractions, setAttractions] = useState([]);
+  const [poiLoading, setPoiLoading] = useState(false);
+
+
   const debouncedDest = useDebounce(destination, 400);
 
   // Fetch autocomplete suggestions using OpenStreetMap Nominatim
@@ -84,6 +104,30 @@ export default function NearbyTraffic() {
     };
     fetchSuggestions();
   }, [debouncedDest]);
+
+
+  async function fetchNearbyAttractions(lat, lon, radius = 5000) {
+  const query = `
+    [out:json][timeout:25];
+    (
+      node["tourism"](around:${radius},${lat},${lon});
+      node["amenity"~"restaurant|cafe|hospital|college|school|cinema|mall|place_of_worship"](around:${radius},${lat},${lon});
+      node["leisure"~"park|stadium|playground"](around:${radius},${lat},${lon});
+    );
+    out center;
+  `;
+
+  const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.elements || [];
+  } catch (err) {
+    console.error("Failed to fetch attractions", err);
+    return [];
+  }
+}
 
   // Load default nearby traffic
   const loadNearbyTraffic = async () => {
@@ -116,8 +160,12 @@ export default function NearbyTraffic() {
           traffic,
         };
       });
+      
 
       setRoutes(enriched);
+      const pois = await fetchNearbyAttractions(location.lat, location.lon);
+      setAttractions(pois);
+
     } catch (err) {
       console.error(err);
       alert("Unable to load traffic data");
@@ -125,6 +173,43 @@ export default function NearbyTraffic() {
       setLoading(false);
     }
   };
+
+  const handleAttractionClick = async (poi) => {
+  const name = poi.tags?.name || "Selected Location";
+
+  setDestination(name);
+  setDestLoading(true);
+
+  try {
+    const route = await fetchTrafficRoute(
+      { lat: userLocation.lat, lng: userLocation.lon },
+      { lat: poi.lat, lng: poi.lon }
+    );
+
+    if (route) {
+      const live = Number(route.duration.replace("s", ""));
+      const normal = Number(route.staticDuration.replace("s", ""));
+      const traffic = getTrafficLevel(route.duration, route.staticDuration);
+
+      const newRoute = {
+        direction: name,
+        etaMin: Math.ceil(live / 60),
+        normalMin: Math.ceil(normal / 60),
+        delayMin: Math.max(0, Math.ceil(live / 60 - normal / 60)),
+        path: polyline.decode(route.polyline.encodedPolyline),
+        traffic,
+      };
+
+      setDestRoute(newRoute);
+      generateAIInsights([newRoute]);
+    }
+  } catch (err) {
+    console.error("Failed to route to attraction", err);
+  } finally {
+    setDestLoading(false);
+  }
+};
+
 
   // Fetch traffic for selected destination
   const handleSelectSuggestion = async (suggestion) => {
@@ -269,14 +354,44 @@ export default function NearbyTraffic() {
               <Popup>Your Location</Popup>
             </Marker>
 
+            {/* Nearby Local Attractions */}
+{attractions.map((poi, i) => (
+  <Marker
+    key={i}
+    position={[poi.lat, poi.lon]}
+    icon={attractionIcon}
+    eventHandlers={{
+      click: () => handleAttractionClick(poi),
+    }}
+  >
+    <Popup>
+      <div style={{ fontSize: "14px" }}>
+        <strong>{poi.tags?.name || "Unnamed Place"}</strong>
+        <br />
+        <span style={{ opacity: 0.7 }}>
+          {poi.tags?.tourism ||
+            poi.tags?.amenity ||
+            poi.tags?.leisure ||
+            "Attraction"}
+        </span>
+        <br />
+        <span style={{ color: "#22c55e" }}>
+          Click to route 🚦
+        </span>
+      </div>
+    </Popup>
+  </Marker>
+))}
+
+
             {/* Nearby traffic */}
-            {routes.map((r, i) => (
+            {/* {routes.map((r, i) => (
               <Polyline
                 key={i}
                 positions={r.path}
                 pathOptions={{ color: r.traffic.color, weight: 5 }}
               />
-            ))}
+            ))} */}
 
             {/* Destination AI route highlighted */}
             {destRoute && (
@@ -382,6 +497,8 @@ const backBtn = {
   fontSize: "16px",
   cursor: "pointer",
 };
+
+
 
 const legend = {
   display: "flex",
