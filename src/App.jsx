@@ -7,6 +7,8 @@ import Home from "./pages/Home"
 import NearbyHospitals from './pages/NearbyHospitals'
 import NearbyTraffic from './pages/NearbyTraffic'
 import NearbySchools from './pages/NearbySchools'
+import Events from './pages/EventsPage'
+import HostEvent from './pages/HostEvent'
 
 function App() {
   return(
@@ -20,6 +22,8 @@ function App() {
         <Route path='/nearby-hospitals' element={<NearbyHospitals />} />
         <Route path='/nearby-traffic' element={<NearbyTraffic />} />
         <Route path='/nearby-schools' element={<NearbySchools />} />
+        <Route path='/events' element={<Events />} />
+        <Route path='/host-event' element={<HostEvent />} />
       </Routes>
     </BrowserRouter>
   )

@@ -26,7 +26,7 @@ const attractionIcon = new L.Icon({
   iconRetinaUrl: markerIcon2x,
   shadowUrl: markerShadow,
 
-  iconSize: [18, 28],     // 👈 smaller than default
+  iconSize: [18, 28],     
   iconAnchor: [9, 28],
   popupAnchor: [1, -24],
   shadowSize: [28, 28],
@@ -86,7 +86,6 @@ export default function NearbyTraffic() {
 
   const debouncedDest = useDebounce(destination, 400);
 
-  // Fetch autocomplete suggestions using OpenStreetMap Nominatim
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!debouncedDest) return setSuggestions([]);
@@ -106,7 +105,7 @@ export default function NearbyTraffic() {
   }, [debouncedDest]);
 
 
-  async function fetchNearbyAttractions(lat, lon, radius = 5000) {
+  async function fetchNearbyAttractions(lat, lon, radius = 100000) {
   const query = `
     [out:json][timeout:25];
     (
