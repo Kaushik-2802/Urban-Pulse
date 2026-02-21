@@ -45,13 +45,13 @@ export default function EventsPage() {
 
   return (
     <Page>
-      <button onClick={() => navigate(-1)} style={backBtn}>
+      <button onClick={() => navigate('/dashboard')} style={backBtn}>
         ← Back
       </button>
 
       <h1>Nearby Events 🎉</h1>
 
-      {/* 🗺️ MAP */}
+      {/* MAP */}
       {userLoc && (
         <MapContainer
           center={[userLoc.lat, userLoc.lng]}

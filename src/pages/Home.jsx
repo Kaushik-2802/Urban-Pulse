@@ -379,7 +379,7 @@ const Home = () => {
             justifyContent: 'center',
             flexWrap: 'wrap'
           }}>
-            <button style={{
+            {/* <button style={{
               background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
               color: 'white',
               padding: '1.25rem 3rem',
@@ -402,7 +402,7 @@ const Home = () => {
               e.target.style.boxShadow = '0 10px 40px rgba(59, 130, 246, 0.4)';
             }}>
               Get Started
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -452,27 +452,28 @@ const Home = () => {
           gap: '2.5rem'
         }}>
           {[
-            {
-              icon: '👥',
-              title: 'Visitor Management',
-              description: 'Keep track of guests entering your society with secure approvals and real-time notifications.',
-              gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: '#10b981'
-            },
-            {
-              icon: '📢',
-              title: 'Community Alerts',
-              description: 'Stay updated with instant announcements, emergency alerts, and important community news.',
-              gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-              color: '#f59e0b'
-            },
-            {
-              icon: '💳',
-              title: 'Rent & Bills',
-              description: 'Easily pay your rent and utility bills online without hassle through our secure payment system.',
-              gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-              color: '#8b5cf6'
-            }
+           {
+  icon: '📍',
+  title: 'Location-Based Services',
+  description: 'Discover nearby urban services, facilities, and points of interest using real-time geolocation and map-based intelligence.',
+  gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+  color: '#10b981'
+},
+{
+  icon: '🗺️',
+  title: 'Smart Traffic & Routes',
+  description: 'Visualize traffic routes and mobility patterns to understand congestion and make informed navigation decisions.',
+  gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+  color: '#f59e0b'
+},
+{
+  icon: '📅',
+  title: 'Local Events & Engagement',
+  description: 'Explore and participate in nearby events filtered by radius, enabling real-time urban engagement and community interaction.',
+  gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+  color: '#8b5cf6'
+}
+
           ].map((feature, index) => (
             <div
               key={index}

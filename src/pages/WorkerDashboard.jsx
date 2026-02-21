@@ -48,49 +48,76 @@ export default function WorkerDashboard() {
     }
   }, [worker]);
 
-  const isProfileComplete = (worker) => {
-  if (!worker) return false;
+  useEffect(() => {
+  const storedUserId = localStorage.getItem("userId");
+  // const storedUserType = localStorage.getItem("userType");
 
-  return (
-    worker.name &&
-    worker.phone &&
-    worker.gender &&
-    worker.profession &&
-    worker.address &&
-    worker.address.addressLine1 &&
-    worker.address.city &&
-    worker.address.country
-  );
+  if (!storedUserId) {
+    navigate("/", { replace: true });
+  }
+}, [navigate]);
+
+//   const isProfileComplete = (worker) => {
+//   if (!worker) return false;
+
+//   return (
+//     worker.name &&
+//     worker.phone &&
+//     worker.gender &&
+//     worker.profession &&
+//     worker.address &&
+//     worker.address.addressLine1 &&
+//     worker.address.city &&
+//     worker.address.country
+//   );
+// };
+
+const calculateProfileCompletion = (worker) => {
+  if (!worker) return 0;
+
+  const fields = [
+    worker.name,
+    worker.phone,
+    worker.gender,
+    worker.profession,
+    worker.address?.addressLine1,
+    worker.address?.city,
+    worker.address?.country
+  ];
+
+  const filled = fields.filter(Boolean).length;
+  return Math.floor((filled / fields.length) * 100);
 };
 
 
-  const fetchWorkerDetails = async () => {
+const fetchWorkerDetails = async () => {
   try {
-    const res = await fetch(`http://localhost:5000/api/worker/profile/${userId}`);
+    const res = await fetch(
+      `http://localhost:5000/api/worker/profile/${userId}`
+    );
 
     if (res.status === 404) {
-      // 🚨 First time user → force profile
       setForceProfile(true);
       setWorker(null);
-      setLoadingProfile(false);
       return;
     }
 
     const data = await res.json();
 
     if (res.ok) {
-      setWorker(data);
-      localStorage.setItem('workerId', data.userId);
+      // 🔥 if backend returns { profile: worker }
+      const workerData = data.profile ? data.profile : data;
 
-      // 🔥 Profile exists but incomplete
-      if (!isProfileComplete(data)) {
+      setWorker(workerData);
+
+      if (!isProfileComplete(workerData)) {
         setForceProfile(true);
       } else {
         setForceProfile(false);
       }
     }
   } catch (err) {
-    console.error('Failed to fetch worker profile:', err);
+    console.error("Failed to fetch worker profile:", err);
   } finally {
     setLoadingProfile(false);
   }
@@ -156,11 +183,59 @@ export default function WorkerDashboard() {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userType');
-      navigate('/');
+      // localStorage.removeItem('userId');
+      // localStorage.removeItem('userType');
+      localStorage.clear();
+      navigate('/',{replace:true});
     }
   };
+
+  const onboardingContainerStyle = {
+  minHeight: '100vh',
+  background: 'linear-gradient(135deg, #0f0f1a 0%, #1c1c2e 100%)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '40px'
+};
+
+const onboardingCardStyle = {
+  width: '100%',
+  maxWidth: '700px',
+  background: 'linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%)',
+  padding: '40px',
+  borderRadius: '20px',
+  boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+  border: '1px solid rgba(255,255,255,0.08)'
+};
+
+const onboardingTitleStyle = {
+  fontSize: '32px',
+  fontWeight: '700',
+  marginBottom: '10px',
+  color: '#ffffff'
+};
+
+const onboardingSubtitleStyle = {
+  fontSize: '16px',
+  color: '#9ca3af',
+  marginBottom: '30px'
+};
+
+const progressContainerStyle = {
+  width: '100%',
+  height: '6px',
+  background: 'rgba(255,255,255,0.1)',
+  borderRadius: '10px',
+  marginBottom: '30px'
+};
+
+const progressBarStyle = {
+  width: '40%', // dynamic later
+  height: '100%',
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  borderRadius: '10px'
+};
 
  if (loadingProfile) {
   return (
@@ -172,13 +247,26 @@ export default function WorkerDashboard() {
 
 if (forceProfile) {
   return (
-    <CreateWorkerProfile
-      userId={userId}
-      onSuccess={() => {
-        setForceProfile(false);
-        fetchWorkerDetails();
-      }}
-    />
+    <div style={onboardingContainerStyle}>
+      <div style={onboardingCardStyle}>
+        <h1 style={onboardingTitleStyle}>Welcome 👋</h1>
+        <p style={onboardingSubtitleStyle}>
+          Let's set up your professional profile to start receiving bookings.
+        </p>
+
+        <div style={progressContainerStyle}>
+          <div style={progressBarStyle}></div>
+        </div>
+
+        <CreateWorkerProfile
+          userId={userId}
+          onSuccess={(profile) => {
+            setWorker(profile);
+            setForceProfile(false);
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -233,12 +321,29 @@ if(showProfile){
             {worker?.name?.charAt(0) || 'W'}
           </div>
           <div>
-            <h1 style={headerTitleStyle}>Worker Dashboard</h1>
-            <p style={headerSubtitleStyle}>
-              {worker?.name || 'Loading...'} 
-              {worker?.profession && <span style={professionBadgeStyle}>{worker.profession}</span>}
-            </p>
-          </div>
+  <p style={headerSubtitleStyle}>
+    {worker?.name || 'Loading...'} 
+    {worker?.profession && (
+      <span style={professionBadgeStyle}>
+        {worker.profession}
+      </span>
+    )}
+  </p>
+
+  {worker && (
+    <div style={{ marginTop: "6px" }}>
+      <span
+        style={{
+          fontSize: "13px",
+          color: "#a0a0b0",
+          fontWeight: "500"
+        }}
+      >
+        Profile Completion: {calculateProfileCompletion(worker)}%
+      </span>
+    </div>
+  )}
+</div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button onClick={() => setShowProfile(true)} style={profileButtonStyle}>

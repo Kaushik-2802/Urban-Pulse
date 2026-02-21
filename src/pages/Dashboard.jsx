@@ -47,13 +47,21 @@ export default function Dashboard() {
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       localStorage.removeItem('userId');
-      window.location.href = '/';
+      // window.location.href = '/';
+      navigate("/",{ replace: true});
     }
   };
+
+  useEffect(() => {
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+    window.history.pushState(null, "", window.location.href);
+  };
+}, []);
   
   const fetchWorkersByProfession=async(profession)=>{
     try{
-      const res=await fetch(`http://localhost:5000/api/worker/${profession}`);
+      const res=await fetch(`http://localhost:5000/api/worker/${profession.toLowerCase()}`);
       const data=await res.json();
       setWorkers(data);
     }catch(err){
@@ -67,7 +75,8 @@ export default function Dashboard() {
       try {
         const userId = localStorage.getItem('userId');
         if (!userId) {
-          console.error('No user ID found in localStorage');
+          // console.error('No user ID found in localStorage');
+          navigate('/');
           return;
         }
 
@@ -85,6 +94,13 @@ export default function Dashboard() {
 
     fetchProfile();
   }, []);
+
+  // 👇 FETCH WORKERS WHEN SERVICE IS SELECTED
+useEffect(() => {
+  if (selectedService) {
+    fetchWorkersByProfession(selectedService);
+  }
+}, [selectedService]);
 
   const styles = {
     container: {
